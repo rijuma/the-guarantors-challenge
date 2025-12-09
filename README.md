@@ -29,7 +29,17 @@ For a first discovery I've used the following prompt on ChatGPT 5.1 Deep Researc
 
 > I want to implement a backend API that validates and standardizes property addresses. The API should expose a single endpoint (ie POST /validate-address) that accepts a property address in free-form text and returns a structured, validated version of the address, including street, number, city, state, zip code. The service can restrict its output for US addresses only. Your solution should handle edge cases (ie partial addresses, typos, etc) gracefully and indicate whether the address is valid, corrected or unverifiable. I'm thinking about using Google Maps API to search for locations matching the free form text provided by the user. If a single marker is returned, it can be taken as the best option, and if multiple places are returned, I'd like to have suggestions for a criteria to select the best suitable option. Do consider some additional services to use, list advantages and disadvantages and have a few best alternatives regardless of paid services or free services to consider on the final project and a few free options or with suitable free tiers for a POC.
 
-The response for this research is in [docs/01-main-discovery-and-overall-approach.pdf](docs/01-main-discovery-and-overall-approach.pdf).
+To see a breakdown on the development process, from the first discovery docs through the implementation, please check at the [docs folder](docs/index.md).
+
+## Live Demo
+
+Just to have an easy way to test it, the API is currently hosted at: https://address-validator.rigoli.dev
+
+You can access swagger through: https://address-validator.rigoli.dev/docs
+
+In order to use it, please click on Authorize and provide the **x-token** that will be sent through email and/or by the challenge submission, or send an `x-header` in the request headers to authorize the request.
+
+This will be taken down once the review period is over.
 
 ## Implementation
 
@@ -62,6 +72,7 @@ GEO_SERVICES=google,geocodio,azure
 ```
 
 Each service requires its corresponding API key:
+
 - `GOOGLE_MAPS_API_KEY` - Required when `google` is enabled
 - `GEOCODIO_API_KEY` - Required when `geocodio` is enabled
 - `AZURE_MAPS_API_KEY` - Required when `azure` is enabled
@@ -69,20 +80,26 @@ Each service requires its corresponding API key:
 ### Key Features
 
 #### Request Coalescing
+
 Duplicate concurrent requests for the same address are automatically coalesced into a single operation, preventing unnecessary API calls and improving efficiency.
 
 #### Parallel Service Execution
+
 When multiple services are configured, they are called asynchronously in parallel to minimize response time.
 
 #### Accuracy-Based Selection
+
 The orchestrator scores each result based on multiple criteria:
+
 - Validation status (valid > corrected > unverifiable)
 - Address completeness (presence of street number, coordinates, etc.)
 - Service-specific reliability scores
 - The best result is returned as the primary response
 
 #### Alternative Addresses
+
 When multiple services return different addresses, the `alt` array is included in the response with:
+
 - All unique addresses ordered by accuracy score
 - A `service` field identifying the source of each address
 - Only included when there are multiple distinct addresses
@@ -90,6 +107,7 @@ When multiple services return different addresses, the `alt` array is included i
 #### Response Examples
 
 Single address (all services agree):
+
 ```json
 {
   "address": {
@@ -105,6 +123,7 @@ Single address (all services agree):
 ```
 
 Multiple addresses (services disagree):
+
 ```json
 {
   "address": {
@@ -157,6 +176,7 @@ Copy `.env.example` as `.env` and update its configuration options.
 The application automatically adjusts log levels based on the `NODE_ENV` environment variable:
 
 - **Development** (`NODE_ENV=development`): Debug-level logs are enabled, showing detailed information about:
+
   - Which services are being called
   - Raw responses from each service
   - Accuracy scores for each result
@@ -166,6 +186,7 @@ The application automatically adjusts log levels based on the `NODE_ENV` environ
 - **Production** (`NODE_ENV=production`): Only info-level and above logs are shown
 
 Example debug output in development (structured JSON logs):
+
 ```json
 {"level":20,"msg":"Starting address validation","address":"1600 Amphitheatre Parkway, Mountain View, CA","services":["google","geocodio","azure"]}
 {"level":20,"msg":"Calling service","service":"google"}
@@ -187,18 +208,21 @@ Example debug output in development (structured JSON logs):
 ## Running the Application
 
 ### Development
+
 ```bash
 pnpm install
 pnpm dev          # Start dev server with hot reload
 ```
 
 ### Production
+
 ```bash
 pnpm build        # Bundle with tsup (creates optimized dist/index.js)
 pnpm start        # Run bundled production build
 ```
 
 ### Testing
+
 ```bash
 # Run tests
 pnpm test:run
@@ -230,6 +254,7 @@ To see a breakdown on the development process, from the first discovery docs thr
 ## API Documentation
 
 Once the server is running, API documentation is available at:
+
 - Swagger UI: `http://localhost:3000/docs`
 
 > [!NOTE]
