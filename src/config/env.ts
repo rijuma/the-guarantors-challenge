@@ -30,11 +30,6 @@ const envSchema = z.object({
 
   CACHE_MAX_SIZE: z.string().default('1000').transform(Number),
   CACHE_TTL_MS: z.string().default('3600000').transform(Number),
-
-  DEBUG: z
-    .string()
-    .default('false')
-    .transform((val) => val.toLowerCase() === 'true'),
 })
 
 export type Env = z.infer<typeof envSchema>

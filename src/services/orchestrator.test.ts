@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
+import type { FastifyBaseLogger } from 'fastify'
 import { AddressServiceOrchestrator } from './orchestrator'
 import { mockGoogleGeocodeResponse, mockGooglePartialMatchResponse } from './google-maps/fixtures'
 import { mockGeocodioResponse } from './geocodio/fixtures'
 
 describe('AddressServiceOrchestrator', () => {
   let mockFetch: Mock
+  let mockLogger: FastifyBaseLogger
 
   const mockConfig = {
     'google-maps': {
@@ -20,11 +22,21 @@ describe('AddressServiceOrchestrator', () => {
   beforeEach(() => {
     mockFetch = vi.fn()
     vi.stubGlobal('fetch', mockFetch)
+
+    mockLogger = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      fatal: vi.fn(),
+      trace: vi.fn(),
+      child: vi.fn(() => mockLogger),
+    } as unknown as FastifyBaseLogger
   })
 
   describe('single service', () => {
     it('returns result from single service', async () => {
-      const orchestrator = new AddressServiceOrchestrator(['google-maps'], mockConfig)
+      const orchestrator = new AddressServiceOrchestrator(['google-maps'], mockConfig, mockLogger)
 
       mockFetch.mockResolvedValue({
         json: () => Promise.resolve(mockGoogleGeocodeResponse()),
@@ -39,7 +51,7 @@ describe('AddressServiceOrchestrator', () => {
     })
 
     it('returns unverifiable when service fails', async () => {
-      const orchestrator = new AddressServiceOrchestrator(['google-maps'], mockConfig)
+      const orchestrator = new AddressServiceOrchestrator(['google-maps'], mockConfig, mockLogger)
 
       mockFetch.mockResolvedValue({
         json: () => Promise.resolve({ results: [], status: 'ZERO_RESULTS' }),
@@ -58,6 +70,7 @@ describe('AddressServiceOrchestrator', () => {
       const orchestrator = new AddressServiceOrchestrator(
         ['google-maps', 'geocodio'],
         mockConfig,
+        mockLogger,
       )
 
       let callCount = 0
@@ -87,6 +100,7 @@ describe('AddressServiceOrchestrator', () => {
       const orchestrator = new AddressServiceOrchestrator(
         ['google-maps', 'geocodio'],
         mockConfig,
+        mockLogger,
       )
 
       let callCount = 0
@@ -119,6 +133,7 @@ describe('AddressServiceOrchestrator', () => {
       const orchestrator = new AddressServiceOrchestrator(
         ['google-maps', 'geocodio'],
         mockConfig,
+        mockLogger,
       )
 
       mockFetch.mockResolvedValue({
@@ -135,6 +150,7 @@ describe('AddressServiceOrchestrator', () => {
       const orchestrator = new AddressServiceOrchestrator(
         ['google-maps', 'geocodio'],
         mockConfig,
+        mockLogger,
       )
 
       let callCount = 0
@@ -160,7 +176,7 @@ describe('AddressServiceOrchestrator', () => {
 
   describe('request coalescing', () => {
     it('reuses promise for duplicate concurrent requests', async () => {
-      const orchestrator = new AddressServiceOrchestrator(['google-maps'], mockConfig)
+      const orchestrator = new AddressServiceOrchestrator(['google-maps'], mockConfig, mockLogger)
 
       let callCount = 0
       mockFetch.mockImplementation(async () => {
@@ -191,6 +207,7 @@ describe('AddressServiceOrchestrator', () => {
       const orchestrator = new AddressServiceOrchestrator(
         ['google-maps', 'geocodio'],
         mockConfig,
+        mockLogger,
       )
 
       let callCount = 0
@@ -219,6 +236,7 @@ describe('AddressServiceOrchestrator', () => {
       const orchestrator = new AddressServiceOrchestrator(
         ['google-maps', 'geocodio'],
         mockConfig,
+        mockLogger,
       )
 
       let callCount = 0
@@ -253,6 +271,7 @@ describe('AddressServiceOrchestrator', () => {
       const orchestrator = new AddressServiceOrchestrator(
         ['google-maps', 'geocodio'],
         mockConfig,
+        mockLogger,
       )
 
       // Both services return essentially the same address
@@ -272,6 +291,7 @@ describe('AddressServiceOrchestrator', () => {
       const orchestrator = new AddressServiceOrchestrator(
         ['google-maps', 'geocodio'],
         mockConfig,
+        mockLogger,
       )
 
       mockFetch.mockRejectedValue(new Error('Network error'))

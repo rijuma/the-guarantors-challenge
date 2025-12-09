@@ -1,7 +1,8 @@
+import type { FastifyBaseLogger } from 'fastify'
 import type { AddressService, ValidationResult } from './base/address-service'
 import { GoogleMapsService } from './google-maps/google-maps-service'
 import { GeocodioService } from './geocodio/geocodio-service'
-import { env, type GeoServiceName } from '../config/env'
+import type { GeoServiceName } from '../config/env'
 import type { StandardizedAddress, AddressValidationStatus } from '../schemas/address'
 
 interface ServiceResult {
@@ -27,11 +28,15 @@ interface ServiceConfig {
 export class AddressServiceOrchestrator {
   private services: Map<GeoServiceName, AddressService> = new Map()
   private requestCache: Map<string, Promise<OrchestratedResult>> = new Map()
+  private logger: FastifyBaseLogger
 
   constructor(
     serviceNames: GeoServiceName[],
     serviceConfigs: Record<GeoServiceName, ServiceConfig>,
+    logger: FastifyBaseLogger,
   ) {
+    this.logger = logger
+
     for (const serviceName of serviceNames) {
       const config = serviceConfigs[serviceName]
       if (!config) {
@@ -73,37 +78,30 @@ export class AddressServiceOrchestrator {
   }
 
   private async performValidation(address: string): Promise<OrchestratedResult> {
-    if (env.DEBUG) {
-      console.log('\n[DEBUG] Starting address validation for:', address)
-      console.log('[DEBUG] Configured services:', Array.from(this.services.keys()))
-    }
+    this.logger.debug({ address, services: Array.from(this.services.keys()) }, 'Starting address validation')
 
     // Call all services in parallel
     const servicePromises = Array.from(this.services.entries()).map(
       async ([serviceName, service]): Promise<ServiceResult> => {
         try {
-          if (env.DEBUG) {
-            console.log(`[DEBUG] Calling ${serviceName} service...`)
-          }
+          this.logger.debug({ service: serviceName }, 'Calling service')
 
           const result = await service.validate(address)
 
-          if (env.DEBUG) {
-            console.log(`[DEBUG] ${serviceName} response:`, JSON.stringify({
-              status: result.status,
-              address: result.address,
-              hasRawResponse: !!result.rawResponse,
-            }, null, 2))
-            if (result.rawResponse) {
-              console.log(`[DEBUG] ${serviceName} raw response:`, JSON.stringify(result.rawResponse, null, 2))
-            }
+          this.logger.debug({
+            service: serviceName,
+            status: result.status,
+            address: result.address,
+            hasRawResponse: !!result.rawResponse,
+          }, 'Service response')
+
+          if (result.rawResponse) {
+            this.logger.debug({ service: serviceName, rawResponse: result.rawResponse }, 'Service raw response')
           }
 
           return { service: serviceName, result }
         } catch (error) {
-          if (env.DEBUG) {
-            console.log(`[DEBUG] ${serviceName} failed with error:`, error)
-          }
+          this.logger.debug({ service: serviceName, error }, 'Service failed')
           // If a service fails, return unverifiable for that service
           return {
             service: serviceName,
@@ -120,14 +118,13 @@ export class AddressServiceOrchestrator {
       (sr) => sr.result.address !== null && sr.result.status !== 'unverifiable',
     )
 
-    if (env.DEBUG) {
-      console.log(`[DEBUG] Valid results count: ${validResults.length} out of ${serviceResults.length}`)
-    }
+    this.logger.debug({
+      validCount: validResults.length,
+      totalCount: serviceResults.length,
+    }, 'Filtered valid results')
 
     if (validResults.length === 0) {
-      if (env.DEBUG) {
-        console.log('[DEBUG] No service could verify the address')
-      }
+      this.logger.debug('No service could verify the address')
       // No service could verify the address
       return {
         address: null,
@@ -141,28 +138,30 @@ export class AddressServiceOrchestrator {
       score: this.calculateAccuracyScore(sr),
     }))
 
-    if (env.DEBUG) {
-      console.log('[DEBUG] Scored results:')
-      scoredResults.forEach((sr) => {
-        console.log(`  - ${sr.service}: score=${sr.score}, status=${sr.result.status}`)
-      })
-    }
+    this.logger.debug({
+      scores: scoredResults.map((sr) => ({
+        service: sr.service,
+        score: sr.score,
+        status: sr.result.status,
+      })),
+    }, 'Scored results')
 
     scoredResults.sort((a, b) => b.score - a.score)
 
     // Best result (highest score)
     const bestResult = scoredResults[0]
 
-    if (env.DEBUG) {
-      console.log(`[DEBUG] Best result selected: ${bestResult.service} (score: ${bestResult.score})`)
-    }
+    this.logger.debug({
+      service: bestResult.service,
+      score: bestResult.score,
+    }, 'Best result selected')
 
     // Build list of unique addresses
     const uniqueAddresses = this.deduplicateAddresses(scoredResults)
 
-    if (env.DEBUG) {
-      console.log(`[DEBUG] Unique addresses after deduplication: ${uniqueAddresses.length}`)
-    }
+    this.logger.debug({
+      uniqueCount: uniqueAddresses.length,
+    }, 'Addresses after deduplication')
 
     // Only include alt if there are multiple unique addresses
     const alt =
@@ -179,10 +178,7 @@ export class AddressServiceOrchestrator {
       alt,
     }
 
-    if (env.DEBUG) {
-      console.log('[DEBUG] Final orchestrated result:', JSON.stringify(finalResult, null, 2))
-      console.log('[DEBUG] Validation complete\n')
-    }
+    this.logger.debug({ result: finalResult }, 'Validation complete')
 
     return finalResult
   }

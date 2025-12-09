@@ -166,48 +166,37 @@ ADDRESS_SERVICE_TIMEOUT=5000
 # Cache
 CACHE_MAX_SIZE=1000
 CACHE_TTL_MS=3600000
-
-# Debug
-DEBUG=false
 ```
 
-### Debug Mode
+### Logging
 
-Enable debug mode to see detailed logging of service responses:
+The application automatically adjusts log levels based on the `NODE_ENV` environment variable:
 
-```bash
-DEBUG=true
+- **Development** (`NODE_ENV=development`): Debug-level logs are enabled, showing detailed information about:
+  - Which services are being called
+  - Raw responses from each service
+  - Accuracy scores for each result
+  - Deduplication process
+  - Final selected result
+
+- **Production** (`NODE_ENV=production`): Only info-level and above logs are shown
+
+Example debug output in development (structured JSON logs):
+```json
+{"level":20,"msg":"Starting address validation","address":"1600 Amphitheatre Parkway, Mountain View, CA","services":["google-maps","geocodio"]}
+{"level":20,"msg":"Calling service","service":"google-maps"}
+{"level":20,"msg":"Service response","service":"google-maps","status":"valid","address":{...},"hasRawResponse":true}
+{"level":20,"msg":"Service raw response","service":"google-maps","rawResponse":{...}}
+{"level":20,"msg":"Calling service","service":"geocodio"}
+{"level":20,"msg":"Service response","service":"geocodio","status":"valid","address":{...}}
+{"level":20,"msg":"Filtered valid results","validCount":2,"totalCount":2}
+{"level":20,"msg":"Scored results","scores":[{"service":"google-maps","score":170,"status":"valid"},{"service":"geocodio","score":165,"status":"valid"}]}
+{"level":20,"msg":"Best result selected","service":"google-maps","score":170}
+{"level":20,"msg":"Addresses after deduplication","uniqueCount":1}
+{"level":20,"msg":"Validation complete","result":{...}}
 ```
 
-When enabled, the console will show:
-- Which services are being called
-- Raw responses from each service
-- Accuracy scores for each result
-- Deduplication process
-- Final selected result
-
-Example debug output:
-```
-[DEBUG] Starting address validation for: 1600 Amphitheatre Parkway, Mountain View, CA
-[DEBUG] Configured services: [ 'google-maps', 'geocodio' ]
-[DEBUG] Calling google-maps service...
-[DEBUG] google-maps response: {
-  "status": "valid",
-  "address": { ... },
-  "hasRawResponse": true
-}
-[DEBUG] google-maps raw response: { ... }
-[DEBUG] Calling geocodio service...
-[DEBUG] geocodio response: { ... }
-[DEBUG] Valid results count: 2 out of 2
-[DEBUG] Scored results:
-  - google-maps: score=170, status=valid
-  - geocodio: score=165, status=valid
-[DEBUG] Best result selected: google-maps (score: 170)
-[DEBUG] Unique addresses after deduplication: 1
-[DEBUG] Final orchestrated result: { ... }
-[DEBUG] Validation complete
-```
+**Note**: Logs use Fastify's built-in logger (pino). The `dev` and `start:dev` scripts automatically use `pino-pretty` for human-readable output. Production (`start`) uses structured JSON logs for better parsing and analysis.
 
 ## Running the Application
 

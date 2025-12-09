@@ -14,7 +14,12 @@ export interface BuildAppOptions extends FastifyServerOptions {
 }
 
 export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyInstance> {
-  const app = Fastify(options)
+  const app = Fastify({
+    logger: {
+      level: env.NODE_ENV === 'production' ? 'info' : 'debug',
+    },
+    ...options,
+  })
 
   await app.register(cors, {
     origin: env.API_DOMAIN,
@@ -67,7 +72,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   const addressService = createAddressService()
   app.decorate('addressService', addressService)
 
-  const addressOrchestrator = createAddressServiceOrchestrator()
+  const addressOrchestrator = createAddressServiceOrchestrator(app.log)
   app.decorate('addressOrchestrator', addressOrchestrator)
 
   if (!options.skipRateLimit) {

@@ -1,3 +1,4 @@
+import type { FastifyBaseLogger } from 'fastify'
 import { env, type GeoServiceName } from '../config/env'
 import type { AddressService } from './base/address-service'
 import { GoogleMapsService } from './google-maps/google-maps-service'
@@ -17,7 +18,7 @@ export function createAddressService(): AddressService {
   })
 }
 
-export function createAddressServiceOrchestrator(): AddressServiceOrchestrator {
+export function createAddressServiceOrchestrator(logger: FastifyBaseLogger): AddressServiceOrchestrator {
   const serviceConfigs: Record<GeoServiceName, { timeout: number; apiKey: string }> = {
     'google-maps': {
       timeout: env.ADDRESS_SERVICE_TIMEOUT,
@@ -29,5 +30,5 @@ export function createAddressServiceOrchestrator(): AddressServiceOrchestrator {
     },
   }
 
-  return new AddressServiceOrchestrator(env.GEO_SERVICES, serviceConfigs)
+  return new AddressServiceOrchestrator(env.GEO_SERVICES, serviceConfigs, logger)
 }
