@@ -54,6 +54,31 @@ const routeSchema = {
           enum: ['valid', 'corrected', 'unverifiable'],
           description: 'Validation status: valid (exact match), corrected (fixed typos/missing info), unverifiable (could not validate)',
         },
+        alt: {
+          type: 'array',
+          description: 'Alternative addresses from different services (only present if multiple unique addresses found)',
+          items: {
+            type: 'object',
+            properties: {
+              street: { type: 'string' },
+              number: { type: 'string', nullable: true },
+              city: { type: 'string' },
+              state: { type: 'string' },
+              zip: { type: 'string' },
+              coordinates: {
+                type: 'array',
+                items: { type: 'number' },
+                minItems: 2,
+                maxItems: 2,
+                description: 'Coordinates as [latitude, longitude]',
+              },
+              service: {
+                type: 'string',
+                description: 'The geocoding service that returned this address',
+              },
+            },
+          },
+        },
       },
       examples: [
         {
@@ -140,11 +165,12 @@ export async function validateAddressRoute(fastify: FastifyInstance): Promise<vo
 
       try {
         const response = await fastify.addressCache.getOrFetch(address, async () => {
-          const result = await fastify.addressService.validate(address)
+          const result = await fastify.addressOrchestrator.validate(address)
 
           return {
             address: result.address,
             status: result.status,
+            alt: result.alt,
           }
         })
 

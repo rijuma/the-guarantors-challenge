@@ -25,9 +25,16 @@ export const standardizedAddressSchema = z.object({
 
 export type StandardizedAddress = z.infer<typeof standardizedAddressSchema>
 
+export const addressWithServiceSchema = standardizedAddressSchema.extend({
+  service: z.string(),
+})
+
+export type AddressWithService = z.infer<typeof addressWithServiceSchema>
+
 export const validateAddressResponseSchema = z.object({
   address: standardizedAddressSchema.nullable(),
   status: addressValidationStatusSchema,
+  alt: z.array(addressWithServiceSchema).optional(),
 })
 
 export type ValidateAddressResponse = z.infer<typeof validateAddressResponseSchema>

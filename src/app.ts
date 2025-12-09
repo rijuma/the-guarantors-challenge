@@ -4,7 +4,7 @@ import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
 import { env } from './config/env.js'
 import { AddressCache } from './cache/address-cache.js'
-import { createAddressService } from './services/index.js'
+import { createAddressService, createAddressServiceOrchestrator } from './services/index.js'
 import { registerRateLimit } from './plugins/rate-limit.js'
 import { validateAddressRoute } from './routes/validate-address.js'
 
@@ -66,6 +66,9 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
   const addressService = createAddressService()
   app.decorate('addressService', addressService)
+
+  const addressOrchestrator = createAddressServiceOrchestrator()
+  app.decorate('addressOrchestrator', addressOrchestrator)
 
   if (!options.skipRateLimit) {
     await registerRateLimit(app)

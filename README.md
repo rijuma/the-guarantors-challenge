@@ -30,3 +30,209 @@ For a first discovery I've used the following prompt on ChatGPT 5.1 Deep Researc
 > I want to implement a backend API that validates and standardizes property addresses. The API should expose a single endpoint (ie POST /validate-address) that accepts a property address in free-form text and returns a structured, validated version of the address, including street, number, city, state, zip code. The service can restrict its output for US addresses only. Your solution should handle edge cases (ie partial addresses, typos, etc) gracefully and indicate whether the address is valid, corrected or unverifiable. I'm thinking about using Google Maps API to search for locations matching the free form text provided by the user. If a single marker is returned, it can be taken as the best option, and if multiple places are returned, I'd like to have suggestions for a criteria to select the best suitable option. Do consider some additional services to use, list advantages and disadvantages and have a few best alternatives regardless of paid services or free services to consider on the final project and a few free options or with suitable free tiers for a POC.
 
 The response for this research is in [docs/01-main-discovery-and-overall-approach.pdf](docs/01-main-discovery-and-overall-approach.pdf).
+
+## Implementation
+
+### Multi-Service Architecture
+
+The API implements a service orchestration layer that supports multiple geocoding services running in parallel:
+
+#### Supported Services
+
+- **Google Maps Geocoding API**: High accuracy geocoding service with excellent typo tolerance
+- **Geocodio**: Cost-effective geocoding service with generous free tier
+
+#### Configuration
+
+Services are configured via the `GEO_SERVICES` environment variable as a comma-separated list:
+
+```bash
+# Use only Google Maps
+GEO_SERVICES=google-maps
+
+# Use only Geocodio
+GEO_SERVICES=geocodio
+
+# Use both services (recommended for best accuracy)
+GEO_SERVICES=google-maps,geocodio
+```
+
+Each service requires its corresponding API key:
+- `GOOGLE_MAPS_API_KEY` - Required when `google-maps` is enabled
+- `GEOCODIO_API_KEY` - Required when `geocodio` is enabled
+
+### Key Features
+
+#### Request Coalescing
+Duplicate concurrent requests for the same address are automatically coalesced into a single operation, preventing unnecessary API calls and improving efficiency.
+
+#### Parallel Service Execution
+When multiple services are configured, they are called asynchronously in parallel to minimize response time.
+
+#### Accuracy-Based Selection
+The orchestrator scores each result based on multiple criteria:
+- Validation status (valid > corrected > unverifiable)
+- Address completeness (presence of street number, coordinates, etc.)
+- Service-specific reliability scores
+- The best result is returned as the primary response
+
+#### Alternative Addresses
+When multiple services return different addresses, the `alt` array is included in the response with:
+- All unique addresses ordered by accuracy score
+- A `service` field identifying the source of each address
+- Only included when there are multiple distinct addresses
+
+#### Response Examples
+
+Single address (all services agree):
+```json
+{
+  "address": {
+    "street": "Amphitheatre Pkwy",
+    "number": "1600",
+    "city": "Mountain View",
+    "state": "CA",
+    "zip": "94043",
+    "coordinates": [37.4224764, -122.0842499]
+  },
+  "status": "valid"
+}
+```
+
+Multiple addresses (services disagree):
+```json
+{
+  "address": {
+    "street": "Main St",
+    "number": "123",
+    "city": "Springfield",
+    "state": "IL",
+    "zip": "62701",
+    "coordinates": [39.7817, -89.6501]
+  },
+  "status": "valid",
+  "alt": [
+    {
+      "street": "Main St",
+      "number": "123",
+      "city": "Springfield",
+      "state": "IL",
+      "zip": "62701",
+      "coordinates": [39.7817, -89.6501],
+      "service": "google-maps"
+    },
+    {
+      "street": "Main Ave",
+      "number": "123",
+      "city": "Springfield",
+      "state": "IL",
+      "zip": "62701",
+      "coordinates": [39.7818, -89.6502],
+      "service": "geocodio"
+    }
+  ]
+}
+```
+
+### Extensibility
+
+The architecture is designed for easy extension to additional geocoding services:
+
+1. Create a new service class extending `AddressService`
+2. Implement the `validate()` and `parseResponse()` methods
+3. Add the service name to `SUPPORTED_GEO_SERVICES` in `src/config/env.ts`
+4. Update the factory in `src/services/orchestrator.ts`
+
+### Environment Variables
+
+See `.env.example` for all available configuration options:
+
+```bash
+# Server
+PORT=3000
+HOST=0.0.0.0
+NODE_ENV=development
+API_DOMAIN=http://localhost:3000
+
+# Authentication
+API_TOKEN=your-secure-api-token-here
+
+# Services
+GEO_SERVICES=google-maps,geocodio
+GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+GEOCODIO_API_KEY=your-geocodio-api-key
+ADDRESS_SERVICE_TIMEOUT=5000
+
+# Cache
+CACHE_MAX_SIZE=1000
+CACHE_TTL_MS=3600000
+
+# Debug
+DEBUG=false
+```
+
+### Debug Mode
+
+Enable debug mode to see detailed logging of service responses:
+
+```bash
+DEBUG=true
+```
+
+When enabled, the console will show:
+- Which services are being called
+- Raw responses from each service
+- Accuracy scores for each result
+- Deduplication process
+- Final selected result
+
+Example debug output:
+```
+[DEBUG] Starting address validation for: 1600 Amphitheatre Parkway, Mountain View, CA
+[DEBUG] Configured services: [ 'google-maps', 'geocodio' ]
+[DEBUG] Calling google-maps service...
+[DEBUG] google-maps response: {
+  "status": "valid",
+  "address": { ... },
+  "hasRawResponse": true
+}
+[DEBUG] google-maps raw response: { ... }
+[DEBUG] Calling geocodio service...
+[DEBUG] geocodio response: { ... }
+[DEBUG] Valid results count: 2 out of 2
+[DEBUG] Scored results:
+  - google-maps: score=170, status=valid
+  - geocodio: score=165, status=valid
+[DEBUG] Best result selected: google-maps (score: 170)
+[DEBUG] Unique addresses after deduplication: 1
+[DEBUG] Final orchestrated result: { ... }
+[DEBUG] Validation complete
+```
+
+## Running the Application
+
+### Development
+```bash
+pnpm install
+pnpm dev
+```
+
+### Production
+```bash
+pnpm build
+pnpm start
+```
+
+### Testing
+```bash
+# Run tests
+pnpm test:run
+
+# Run tests with coverage
+pnpm test:coverage
+```
+
+## API Documentation
+
+Once the server is running, API documentation is available at:
+- Swagger UI: `http://localhost:3000/docs`
