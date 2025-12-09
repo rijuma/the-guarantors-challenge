@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const geocodioAddressComponentsSchema = z.object({
   number: z.string().optional(),
   predirectional: z.string().optional(),
+  postdirectional: z.string().optional(),
   street: z.string().optional(),
   suffix: z.string().optional(),
   formatted_street: z.string().optional(),
@@ -22,6 +23,7 @@ export const geocodioLocationSchema = z.object({
 
 export const geocodioResultSchema = z.object({
   address_components: geocodioAddressComponentsSchema,
+  address_lines: z.array(z.string()).optional(),
   formatted_address: z.string(),
   location: geocodioLocationSchema,
   accuracy: z.number(),
@@ -33,7 +35,8 @@ export type GeocodioResult = z.infer<typeof geocodioResultSchema>
 
 export const geocodioResponseSchema = z.object({
   input: z.object({
-    address_string: z.string(),
+    address_string: z.string().optional(),
+    address_components: geocodioAddressComponentsSchema.optional(),
     formatted_address: z.string(),
   }),
   results: z.array(geocodioResultSchema),
