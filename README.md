@@ -231,3 +231,6 @@ To see a breakdown on the development process, from the first discovery docs thr
 
 Once the server is running, API documentation is available at:
 - Swagger UI: `http://localhost:3000/docs`
+
+> [!NOTE]
+> Please ignore files ´Dockerfile´ and ´compose.yml´. Those are not part of the project, and are only used to make this project available for testing by hosting it on a private server.

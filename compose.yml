@@ -1,0 +1,45 @@
+services:
+  the-guarantors-api-challenge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: the-guarantors-api-challenge
+    restart: unless-stopped
+
+    environment:
+      # NGINX Reverse Proxy Configuration
+      VIRTUAL_HOST: ${PROXY_VIRTUAL_HOST:-localhost}
+      VIRTUAL_PORT: ${PROXY_VIRTUAL_PORT:-3000}
+
+      # Server Configuration
+      PORT: ${PROXY_VIRTUAL_PORT:-3000}
+      HOST: 0.0.0.0
+      NODE_ENV: production
+
+      # API Domain (for CORS and Swagger)
+      API_DOMAIN: ${API_DOMAIN:-http://localhost:3000}
+
+      # Authentication - CHANGE THIS IN PRODUCTION!
+      API_TOKEN: ${API_TOKEN:-your-secure-api-token-here}
+
+      # Geocoding Services
+      # Comma-separated list: google,geocodio,azure
+      GEO_SERVICES: ${GEO_SERVICES:-google}
+
+      # API Keys - Set these via environment or .env file
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      GEOCODIO_API_KEY: ${GEOCODIO_API_KEY}
+      AZURE_MAPS_API_KEY: ${AZURE_MAPS_API_KEY}
+
+      # Service Configuration
+      ADDRESS_SERVICE_TIMEOUT: ${ADDRESS_SERVICE_TIMEOUT:-5000}
+
+      # Cache Configuration
+      CACHE_MAX_SIZE: ${CACHE_MAX_SIZE:-1000}
+      CACHE_TTL_MS: ${CACHE_TTL_MS:-3600000}
+
+
+networks:
+  default:
+    external: true
+    name: proxy
