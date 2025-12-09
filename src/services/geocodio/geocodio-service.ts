@@ -4,7 +4,7 @@ import type { StandardizedAddress, AddressValidationStatus } from '@/schemas/add
 
 export class GeocodioService extends AddressService {
   private static readonly MIN_ACCURACY_FOR_VALID = 0.8
-  private readonly baseUrl = 'https://api.geocod.io/v1.7/geocode'
+  private readonly baseUrl = 'https://api.geocod.io/v1.9/geocode'
 
   protected buildRequestUrl(address: string): string {
     const params = new URLSearchParams({

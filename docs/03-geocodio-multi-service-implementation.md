@@ -29,7 +29,7 @@ December 9, 2025
 
 **Key Features:**
 - Implements the `AddressService` base class
-- Uses Geocodio v1.7 API
+- Uses Geocodio v1.9 API
 - Accuracy determination based on score (0-1) and accuracy type
 - Handles rooftop, range_interpolation, point, and street_center accuracy types
 

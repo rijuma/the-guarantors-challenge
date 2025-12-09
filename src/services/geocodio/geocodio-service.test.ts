@@ -136,7 +136,7 @@ describe('GeocodioService', () => {
       await service.validate('123 Main St')
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('https://api.geocod.io/v1.7/geocode'),
+        expect.stringContaining('https://api.geocod.io/v1.9/geocode'),
         expect.any(Object),
       )
       expect(mockFetch).toHaveBeenCalledWith(
