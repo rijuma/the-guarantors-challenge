@@ -216,6 +216,10 @@ pnpm typecheck
 pnpm start:dev    # Run TypeScript directly with tsx (no build needed)
 ```
 
+### Development process
+
+To see a breakdown on the development process, from the first discovery docs through the implementation, please check at the [docs folder](docs/index.md).
+
 ### Architecture
 
 - **Development**: Uses `tsx` for fast iteration with hot reload
