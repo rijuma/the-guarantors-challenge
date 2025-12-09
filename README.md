@@ -203,6 +203,8 @@ Example debug output in development (structured JSON logs):
 {"level":20,"msg":"Validation complete","result":{...}}
 ```
 
+You can see a full example logs for an address search on all three services [here](docs/example-logs.md).
+
 **Note**: Logs use Fastify's built-in logger (pino). The `dev` and `start:dev` scripts automatically use `pino-pretty` for human-readable output. Production (`start`) uses structured JSON logs for better parsing and analysis.
 
 ## Running the Application
