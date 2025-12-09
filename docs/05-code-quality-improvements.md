@@ -50,6 +50,7 @@ The improvements were organized into five phases, prioritizing critical security
 **Issue**: Direct string comparison using equality operators exits immediately when it finds a mismatch. Attackers can measure response times to guess tokens character by character.
 
 **Attack Method**:
+
 - Compare "abc" vs "xyz" → fast response (first character differs)
 - Compare "abc" vs "abz" → slower response (matches first two characters)
 - By measuring these timing differences, attackers can discover the valid token
@@ -91,6 +92,7 @@ The improvements were organized into five phases, prioritizing critical security
 **Objective**: Remove comments that simply restate what the code does
 
 **Examples of Removed Comments**:
+
 - "Call all services in parallel" (before parallel Promise.all)
 - "Filter out services that couldn't verify" (before filtering unverifiable results)
 - "Score and sort results by accuracy" (before scoring logic)
@@ -100,6 +102,7 @@ The improvements were organized into five phases, prioritizing critical security
 **Principle Applied**: Code should be self-documenting. Comments should explain "why" not "what."
 
 **Kept Comments**: Only retained comments explaining:
+
 - Complex algorithms requiring context
 - Business logic rationale
 - Non-obvious edge case handling
@@ -122,6 +125,7 @@ The improvements were organized into five phases, prioritizing critical security
 3. **Azure Maps Score Thresholds**: Extracted the 8.0 minimum score threshold into a named constant for clarity.
 
 **Benefits**:
+
 - Changes can be made in one place
 - Intent is clearer through naming
 - Type safety prevents accidental modification
@@ -156,12 +160,14 @@ The improvements were organized into five phases, prioritizing critical security
 ## Security Impact Summary
 
 ### Before Improvements
+
 - **Timing Attack Vulnerability**: Token could be discovered through timing analysis
 - **Missing Return Statement**: Potential for "Reply already sent" runtime errors
 - **Unvalidated Headers**: Type errors possible with array or undefined headers
 - **Unchecked HTTP Status**: Silent failures and confusing error messages
 
 ### After Improvements
+
 - **Timing Attack**: Eliminated through constant-time comparison ✅
 - **Flow Control**: Proper return prevents double-send errors ✅
 - **Header Validation**: All cases handled correctly ✅
@@ -174,12 +180,14 @@ The improvements were organized into five phases, prioritizing critical security
 ### Metrics
 
 **Before**:
+
 - Redundant comments: 10+
 - Magic numbers: 15+
 - Inconsistent patterns: 3
 - Security vulnerabilities: 4
 
 **After**:
+
 - Redundant comments: 0 ✅
 - Magic numbers: 0 ✅
 - Inconsistent patterns: 0 ✅
@@ -188,77 +196,11 @@ The improvements were organized into five phases, prioritizing critical security
 ### Test Results
 
 All verification checks passing:
+
 - ✅ 62 unit tests passing
 - ✅ TypeScript compilation successful
 - ✅ Production build successful
 - ✅ Service layer coverage: 91-100%
-
----
-
-## Lessons Learned
-
-### Security Best Practices
-
-1. **Always use constant-time comparison** for secrets and tokens
-2. **Never trust external HTTP responses** without status validation
-3. **Validate types from dynamic sources** like HTTP headers
-4. **Return after sending responses** to prevent flow control issues
-
-### Code Quality Principles
-
-1. **Self-documenting code** reduces need for comments
-2. **Named constants** express intent better than magic numbers
-3. **Consistent patterns** across similar code improve maintainability
-4. **Test mocks should match production** to catch real issues
-
-### Development Process
-
-1. **Systematic code review** catches issues before production
-2. **Phased improvements** keep changes manageable
-3. **Test-driven verification** ensures no regressions
-4. **Documentation captures** decisions and rationale
-
----
-
-## Future Improvement Phases
-
-### Phase 3: Refactoring (Planned)
-
-**Objectives**:
-- Extract duplicate validation logic to base class
-- Create ServiceFactory for service instantiation
-- Implement ScoringStrategy for accuracy calculation
-- Create AddressDeduplicator for normalization logic
-- Consolidate environment validation
-
-**Benefits**: Better separation of concerns, reduced duplication, easier testing
-
----
-
-### Phase 4: Test Infrastructure (Planned)
-
-**Objectives**:
-- Create reusable test setup utilities
-- Consolidate test constants and fixtures
-- Implement immutable fixture patterns
-- Add edge case tests for cache TTL, LRU eviction, etc.
-- Improve test descriptions for clarity
-
-**Benefits**: Faster test writing, better coverage, clearer test intent
-
----
-
-### Phase 5: Production Polish (Planned)
-
-**Objectives**:
-- Create custom error types for different failure modes
-- Improve validation error messages with details
-- Add input validation to service methods
-- Protect Swagger UI in production environments
-- Enhance CORS configuration
-- Add request cache size limits
-
-**Benefits**: Better error handling, improved security, production hardening
 
 ---
 
