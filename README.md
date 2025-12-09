@@ -2,6 +2,8 @@
 
 > Dev: Juan Marcos Rigoli ([@rijuma](https://github.com/rijuma))
 
+**DeepWiki Analysis**: https://deepwiki.com/rijuma/the-guarantors-challenge
+
 ## Challenge instructions
 
 Your task is to design and implement a backend API that validates and standardizes property addresses. The API should expose a single endpoint (ie POST /validate-address) that accepts a property address in free-form text and returns a structured, validated version of the address, including street, number, city, state, zip code. The service can restrict its output for US addresses only. Your solution should handle edge cases (ie partial addresses, typos, etc) gracefully and indicate whether the address is valid, corrected or unverifiable.
