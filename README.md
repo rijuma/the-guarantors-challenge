@@ -40,6 +40,7 @@ The API implements a service orchestration layer that supports multiple geocodin
 #### Supported Services
 
 - **Google Maps Geocoding API**: High accuracy geocoding service with excellent typo tolerance
+- **Azure Maps Search API**: High accuracy geocoding with TomTom data and strong typo tolerance
 - **Geocodio**: Cost-effective geocoding service with generous free tier
 
 #### Configuration
@@ -48,18 +49,22 @@ Services are configured via the `GEO_SERVICES` environment variable as a comma-s
 
 ```bash
 # Use only Google Maps
-GEO_SERVICES=google-maps
+GEO_SERVICES=google
 
 # Use only Geocodio
 GEO_SERVICES=geocodio
 
-# Use both services (recommended for best accuracy)
-GEO_SERVICES=google-maps,geocodio
+# Use only Azure Maps
+GEO_SERVICES=azure
+
+# Use multiple services (recommended for best accuracy)
+GEO_SERVICES=google,geocodio,azure
 ```
 
 Each service requires its corresponding API key:
-- `GOOGLE_MAPS_API_KEY` - Required when `google-maps` is enabled
+- `GOOGLE_MAPS_API_KEY` - Required when `google` is enabled
 - `GEOCODIO_API_KEY` - Required when `geocodio` is enabled
+- `AZURE_MAPS_API_KEY` - Required when `azure` is enabled
 
 ### Key Features
 
@@ -119,7 +124,7 @@ Multiple addresses (services disagree):
       "state": "IL",
       "zip": "62701",
       "coordinates": [39.7817, -89.6501],
-      "service": "google-maps"
+      "service": "google"
     },
     {
       "street": "Main Ave",
@@ -158,9 +163,10 @@ API_DOMAIN=http://localhost:3000
 API_TOKEN=your-secure-api-token-here
 
 # Services
-GEO_SERVICES=google-maps,geocodio
+GEO_SERVICES=google,geocodio,azure
 GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 GEOCODIO_API_KEY=your-geocodio-api-key
+AZURE_MAPS_API_KEY=your-azure-maps-subscription-key
 ADDRESS_SERVICE_TIMEOUT=5000
 
 # Cache
@@ -183,15 +189,17 @@ The application automatically adjusts log levels based on the `NODE_ENV` environ
 
 Example debug output in development (structured JSON logs):
 ```json
-{"level":20,"msg":"Starting address validation","address":"1600 Amphitheatre Parkway, Mountain View, CA","services":["google-maps","geocodio"]}
-{"level":20,"msg":"Calling service","service":"google-maps"}
-{"level":20,"msg":"Service response","service":"google-maps","status":"valid","address":{...},"hasRawResponse":true}
-{"level":20,"msg":"Service raw response","service":"google-maps","rawResponse":{...}}
+{"level":20,"msg":"Starting address validation","address":"1600 Amphitheatre Parkway, Mountain View, CA","services":["google","geocodio","azure"]}
+{"level":20,"msg":"Calling service","service":"google"}
+{"level":20,"msg":"Service response","service":"google","status":"valid","address":{...},"hasRawResponse":true}
+{"level":20,"msg":"Service raw response","service":"google","rawResponse":{...}}
 {"level":20,"msg":"Calling service","service":"geocodio"}
 {"level":20,"msg":"Service response","service":"geocodio","status":"valid","address":{...}}
-{"level":20,"msg":"Filtered valid results","validCount":2,"totalCount":2}
-{"level":20,"msg":"Scored results","scores":[{"service":"google-maps","score":170,"status":"valid"},{"service":"geocodio","score":165,"status":"valid"}]}
-{"level":20,"msg":"Best result selected","service":"google-maps","score":170}
+{"level":20,"msg":"Calling service","service":"azure"}
+{"level":20,"msg":"Service response","service":"azure","status":"valid","address":{...}}
+{"level":20,"msg":"Filtered valid results","validCount":3,"totalCount":3}
+{"level":20,"msg":"Scored results","scores":[{"service":"google","score":170,"status":"valid"},{"service":"azure","score":167,"status":"valid"},{"service":"geocodio","score":165,"status":"valid"}]}
+{"level":20,"msg":"Best result selected","service":"google","score":170}
 {"level":20,"msg":"Addresses after deduplication","uniqueCount":1}
 {"level":20,"msg":"Validation complete","result":{...}}
 ```

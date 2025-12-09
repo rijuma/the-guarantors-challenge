@@ -2,6 +2,7 @@ import type { FastifyBaseLogger } from 'fastify'
 import type { AddressService, ValidationResult } from './base/address-service'
 import { GoogleMapsService } from './google-maps/google-maps-service'
 import { GeocodioService } from './geocodio/geocodio-service'
+import { AzureMapsService } from './azure-maps/azure-maps-service'
 import { env, type GeoServiceName } from '@/config/env'
 import type { StandardizedAddress, AddressValidationStatus } from '@/schemas/address'
 import { getCacheKey } from '@/utils'
@@ -44,9 +45,9 @@ export class AddressServiceOrchestrator {
     const timeout = env.ADDRESS_SERVICE_TIMEOUT
 
     switch (name) {
-      case 'google-maps':
+      case 'google':
         if (!env.GOOGLE_MAPS_API_KEY) {
-          throw new Error('GOOGLE_MAPS_API_KEY is required for google-maps service')
+          throw new Error('GOOGLE_MAPS_API_KEY is required for google service')
         }
         return new GoogleMapsService({
           timeout,
@@ -59,6 +60,14 @@ export class AddressServiceOrchestrator {
         return new GeocodioService({
           timeout,
           apiKey: env.GEOCODIO_API_KEY,
+        })
+      case 'azure':
+        if (!env.AZURE_MAPS_API_KEY) {
+          throw new Error('AZURE_MAPS_API_KEY is required for azure service')
+        }
+        return new AzureMapsService({
+          timeout,
+          apiKey: env.AZURE_MAPS_API_KEY,
         })
       default:
         throw new Error(`Unknown service: ${name}`)
@@ -218,8 +227,11 @@ export class AddressServiceOrchestrator {
 
     // Service-specific bonuses (based on known accuracy from discovery doc)
     switch (serviceResult.service) {
-      case 'google-maps':
+      case 'google':
         score += 10 // Google Maps is known for high accuracy
+        break
+      case 'azure':
+        score += 7 // Azure Maps with TomTom data, between Google and Geocodio
         break
       case 'geocodio':
         score += 5
