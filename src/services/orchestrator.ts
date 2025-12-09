@@ -1,8 +1,8 @@
-import type { AddressService, ValidationResult } from './base/address-service.js'
-import { GoogleMapsService } from './google-maps/google-maps-service.js'
-import { GeocodioService } from './geocodio/geocodio-service.js'
-import { env, type GeoServiceName } from '../config/env.js'
-import type { StandardizedAddress, AddressValidationStatus } from '../schemas/address.js'
+import type { AddressService, ValidationResult } from './base/address-service'
+import { GoogleMapsService } from './google-maps/google-maps-service'
+import { GeocodioService } from './geocodio/geocodio-service'
+import { env, type GeoServiceName } from '../config/env'
+import type { StandardizedAddress, AddressValidationStatus } from '../schemas/address'
 
 interface ServiceResult {
   service: GeoServiceName

@@ -1,4 +1,4 @@
-import type { StandardizedAddress, AddressValidationStatus } from '../../schemas/address.js'
+import type { StandardizedAddress, AddressValidationStatus } from '../../schemas/address'
 
 export interface AddressServiceConfig {
   timeout: number

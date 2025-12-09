@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { AddressCache } from './address-cache.js'
-import type { ValidateAddressResponse } from '../schemas/address.js'
+import { AddressCache } from './address-cache'
+import type { ValidateAddressResponse } from '../schemas/address'
 
 describe('AddressCache', () => {
   let cache: AddressCache

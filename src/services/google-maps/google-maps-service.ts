@@ -1,10 +1,10 @@
-import { AddressService, type ValidationResult } from '../base/address-service.js'
+import { AddressService, type ValidationResult } from '../base/address-service'
 import {
   geocodeResponseSchema,
   type GeocodeResult,
   type AddressComponent,
-} from './schemas.js'
-import type { StandardizedAddress, AddressValidationStatus } from '../../schemas/address.js'
+} from './schemas'
+import type { StandardizedAddress, AddressValidationStatus } from '../../schemas/address'
 
 export class GoogleMapsService extends AddressService {
   private readonly baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json'

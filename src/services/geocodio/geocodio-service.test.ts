@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest'
-import { GeocodioService } from './geocodio-service.js'
+import { GeocodioService } from './geocodio-service'
 import {
   mockGeocodioResponse,
   mockGeocodioZeroResultsResponse,
   mockGeocodioLowAccuracyResponse,
   mockGeocodioWithoutNumberResponse,
-} from './fixtures.js'
+} from './fixtures'
 
 describe('GeocodioService', () => {
   let service: GeocodioService

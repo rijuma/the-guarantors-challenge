@@ -2,11 +2,11 @@ import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastif
 import cors from '@fastify/cors'
 import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
-import { env } from './config/env.js'
-import { AddressCache } from './cache/address-cache.js'
-import { createAddressService, createAddressServiceOrchestrator } from './services/index.js'
-import { registerRateLimit } from './plugins/rate-limit.js'
-import { validateAddressRoute } from './routes/validate-address.js'
+import { env } from './config/env'
+import { AddressCache } from './cache/address-cache'
+import { createAddressService, createAddressServiceOrchestrator } from './services/index'
+import { registerRateLimit } from './plugins/rate-limit'
+import { validateAddressRoute } from './routes/validate-address'
 
 export interface BuildAppOptions extends FastifyServerOptions {
   skipRateLimit?: boolean

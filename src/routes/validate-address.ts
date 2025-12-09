@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import { validateAddressRequestSchema, type ValidateAddressResponse } from '../schemas/address.js'
-import { perSecondRateLimit } from '../plugins/rate-limit.js'
-import { verifyAuth } from '../plugins/auth.js'
+import { validateAddressRequestSchema, type ValidateAddressResponse } from '../schemas/address'
+import { perSecondRateLimit } from '../plugins/rate-limit'
+import { verifyAuth } from '../plugins/auth'
 
 interface ValidateAddressBody {
   address: string

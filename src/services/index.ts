@@ -1,14 +1,14 @@
-import { env, type GeoServiceName } from '../config/env.js'
-import type { AddressService } from './base/address-service.js'
-import { GoogleMapsService } from './google-maps/google-maps-service.js'
-import { GeocodioService } from './geocodio/geocodio-service.js'
-import { AddressServiceOrchestrator } from './orchestrator.js'
+import { env, type GeoServiceName } from '../config/env'
+import type { AddressService } from './base/address-service'
+import { GoogleMapsService } from './google-maps/google-maps-service'
+import { GeocodioService } from './geocodio/geocodio-service'
+import { AddressServiceOrchestrator } from './orchestrator'
 
-export { AddressService } from './base/address-service.js'
-export { GoogleMapsService } from './google-maps/google-maps-service.js'
-export { GeocodioService } from './geocodio/geocodio-service.js'
-export { AddressServiceOrchestrator } from './orchestrator.js'
-export type { OrchestratedResult } from './orchestrator.js'
+export { AddressService } from './base/address-service'
+export { GoogleMapsService } from './google-maps/google-maps-service'
+export { GeocodioService } from './geocodio/geocodio-service'
+export { AddressServiceOrchestrator } from './orchestrator'
+export type { OrchestratedResult } from './orchestrator'
 
 export function createAddressService(): AddressService {
   return new GoogleMapsService({

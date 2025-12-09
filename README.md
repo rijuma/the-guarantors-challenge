@@ -214,13 +214,13 @@ Example debug output:
 ### Development
 ```bash
 pnpm install
-pnpm dev
+pnpm dev          # Start dev server with hot reload
 ```
 
 ### Production
 ```bash
-pnpm build
-pnpm start
+pnpm build        # Bundle with tsup (creates optimized dist/index.js)
+pnpm start        # Run bundled production build
 ```
 
 ### Testing
@@ -230,7 +230,24 @@ pnpm test:run
 
 # Run tests with coverage
 pnpm test:coverage
+
+# Type checking only
+pnpm typecheck
 ```
+
+### Alternative Commands
+
+```bash
+pnpm start:dev    # Run TypeScript directly with tsx (no build needed)
+```
+
+### Architecture
+
+- **Development**: Uses `tsx` for fast iteration with hot reload
+- **Production**: Uses `tsup` to create a single bundled ESM file
+- **Type Checking**: Uses TypeScript compiler for validation
+- **Testing**: Uses Vitest with native TypeScript support
+- **Module System**: ESNext with bundler resolution (no `.js` extensions needed)
 
 ## API Documentation
 

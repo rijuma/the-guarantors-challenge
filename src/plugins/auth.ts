@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import { env } from '../config/env.js'
+import { env } from '../config/env'
 
 export async function verifyAuth(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   const token = request.headers['x-token']

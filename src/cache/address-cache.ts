@@ -1,5 +1,5 @@
 import { LRUCache } from 'lru-cache'
-import type { ValidateAddressResponse } from '../schemas/address.js'
+import type { ValidateAddressResponse } from '../schemas/address'
 
 export interface AddressCacheOptions {
   maxSize: number

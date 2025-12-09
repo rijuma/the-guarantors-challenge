@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
-import { AddressServiceOrchestrator } from './orchestrator.js'
-import { mockGoogleGeocodeResponse, mockGooglePartialMatchResponse } from './google-maps/fixtures.js'
-import { mockGeocodioResponse } from './geocodio/fixtures.js'
+import { AddressServiceOrchestrator } from './orchestrator'
+import { mockGoogleGeocodeResponse, mockGooglePartialMatchResponse } from './google-maps/fixtures'
+import { mockGeocodioResponse } from './geocodio/fixtures'
 
 describe('AddressServiceOrchestrator', () => {
   let mockFetch: Mock

@@ -1,6 +1,6 @@
-import type { AddressCache } from '../cache/address-cache.js'
-import type { AddressService } from '../services/base/address-service.js'
-import type { AddressServiceOrchestrator } from '../services/orchestrator.js'
+import type { AddressCache } from '../cache/address-cache'
+import type { AddressService } from '../services/base/address-service'
+import type { AddressServiceOrchestrator } from '../services/orchestrator'
 
 declare module 'fastify' {
   interface FastifyInstance {

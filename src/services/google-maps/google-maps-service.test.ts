@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest'
-import { GoogleMapsService } from './google-maps-service.js'
+import { GoogleMapsService } from './google-maps-service'
 import {
   mockGoogleGeocodeResponse,
   mockGoogleZeroResultsResponse,
   mockGooglePartialMatchResponse,
-} from './fixtures.js'
+} from './fixtures'
 
 describe('GoogleMapsService', () => {
   let service: GoogleMapsService
