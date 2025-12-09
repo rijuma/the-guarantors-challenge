@@ -10,7 +10,7 @@ async function main(): Promise<void> {
 
   try {
     await app.listen({ port: env.PORT, host: env.HOST })
-    console.log(`Server listening on http://${env.HOST}:${env.PORT}`)
+    console.log(`Server listening on ${env.API_DOMAIN}`)
   } catch (error) {
     app.log.error(error)
     process.exit(1)

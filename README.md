@@ -150,29 +150,7 @@ The architecture is designed for easy extension to additional geocoding services
 
 ### Environment Variables
 
-See `.env.example` for all available configuration options:
-
-```bash
-# Server
-PORT=3000
-HOST=0.0.0.0
-NODE_ENV=development
-API_DOMAIN=http://localhost:3000
-
-# Authentication
-API_TOKEN=your-secure-api-token-here
-
-# Services
-GEO_SERVICES=google,geocodio,azure
-GOOGLE_MAPS_API_KEY=your-google-maps-api-key
-GEOCODIO_API_KEY=your-geocodio-api-key
-AZURE_MAPS_API_KEY=your-azure-maps-subscription-key
-ADDRESS_SERVICE_TIMEOUT=5000
-
-# Cache
-CACHE_MAX_SIZE=1000
-CACHE_TTL_MS=3600000
-```
+Copy `.env.example` as `.env` and update its configuration options.
 
 ### Logging
 
@@ -244,7 +222,6 @@ pnpm start:dev    # Run TypeScript directly with tsx (no build needed)
 - **Production**: Uses `tsup` to create a single bundled ESM file
 - **Type Checking**: Uses TypeScript compiler for validation
 - **Testing**: Uses Vitest with native TypeScript support
-- **Module System**: ESNext with bundler resolution (no `.js` extensions needed)
 
 ## API Documentation
 
