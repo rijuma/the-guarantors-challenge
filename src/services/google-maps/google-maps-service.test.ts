@@ -23,6 +23,9 @@ describe('GoogleMapsService', () => {
   describe('validate', () => {
     it('returns valid status for exact match', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGoogleGeocodeResponse()),
       })
 
@@ -41,6 +44,9 @@ describe('GoogleMapsService', () => {
 
     it('returns corrected status for partial match', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGooglePartialMatchResponse()),
       })
 
@@ -52,6 +58,9 @@ describe('GoogleMapsService', () => {
 
     it('returns unverifiable status for zero results', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGoogleZeroResultsResponse()),
       })
 
@@ -63,6 +72,9 @@ describe('GoogleMapsService', () => {
 
     it('returns unverifiable for invalid response structure', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve({ invalid: 'response' }),
       })
 
@@ -92,6 +104,9 @@ describe('GoogleMapsService', () => {
       }
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(incompleteResponse),
       })
 
@@ -115,6 +130,9 @@ describe('GoogleMapsService', () => {
 
     it('builds correct request URL', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGoogleGeocodeResponse()),
       })
 
@@ -144,6 +162,9 @@ describe('GoogleMapsService', () => {
         )
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(responseWithoutNumber),
       })
 
@@ -161,6 +182,9 @@ describe('GoogleMapsService', () => {
         )
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(responseWithoutRoute),
       })
 

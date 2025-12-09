@@ -28,6 +28,27 @@ export interface OrchestratorOptions {
 }
 
 export class AddressServiceOrchestrator {
+  private static readonly SCORE_WEIGHTS = {
+    STATUS: {
+      valid: 100,
+      corrected: 50,
+      unverifiable: 0,
+    },
+    COMPONENTS: {
+      number: 20,
+      street: 15,
+      city: 10,
+      state: 10,
+      zip: 10,
+      coordinates: 5,
+    },
+    SERVICES: {
+      google: 10, // Google Maps is known for high accuracy
+      azure: 7, // Azure Maps with TomTom data, between Google and Geocodio
+      geocodio: 5,
+    },
+  } as const
+
   private services: Map<GeoServiceName, AddressService> = new Map()
   private requestCache: Map<string, Promise<OrchestratedResult>> = new Map()
   private logger: FastifyBaseLogger
@@ -93,9 +114,11 @@ export class AddressServiceOrchestrator {
   }
 
   private async performValidation(address: string): Promise<OrchestratedResult> {
-    this.logger.debug({ address, services: Array.from(this.services.keys()) }, 'Starting address validation')
+    this.logger.debug(
+      { address, services: Array.from(this.services.keys()) },
+      'Starting address validation',
+    )
 
-    // Call all services in parallel
     const servicePromises = Array.from(this.services.entries()).map(
       async ([serviceName, service]): Promise<ServiceResult> => {
         try {
@@ -103,21 +126,26 @@ export class AddressServiceOrchestrator {
 
           const result = await service.validate(address)
 
-          this.logger.debug({
-            service: serviceName,
-            status: result.status,
-            address: result.address,
-            hasRawResponse: !!result.rawResponse,
-          }, 'Service response')
+          this.logger.debug(
+            {
+              service: serviceName,
+              status: result.status,
+              address: result.address,
+              hasRawResponse: !!result.rawResponse,
+            },
+            'Service response',
+          )
 
           if (result.rawResponse) {
-            this.logger.debug({ service: serviceName, rawResponse: result.rawResponse }, 'Service raw response')
+            this.logger.debug(
+              { service: serviceName, rawResponse: result.rawResponse },
+              'Service raw response',
+            )
           }
 
           return { service: serviceName, result }
         } catch (error) {
           this.logger.debug({ service: serviceName, error }, 'Service failed')
-          // If a service fails, return unverifiable for that service
           return {
             service: serviceName,
             result: { address: null, status: 'unverifiable' },
@@ -128,57 +156,63 @@ export class AddressServiceOrchestrator {
 
     const serviceResults = await Promise.all(servicePromises)
 
-    // Filter out services that couldn't verify the address
     const validResults = serviceResults.filter(
       (sr) => sr.result.address !== null && sr.result.status !== 'unverifiable',
     )
 
-    this.logger.debug({
-      validCount: validResults.length,
-      totalCount: serviceResults.length,
-    }, 'Filtered valid results')
+    this.logger.debug(
+      {
+        validCount: validResults.length,
+        totalCount: serviceResults.length,
+      },
+      'Filtered valid results',
+    )
 
     if (validResults.length === 0) {
       this.logger.debug('No service could verify the address')
-      // No service could verify the address
       return {
         address: null,
         status: 'unverifiable',
       }
     }
 
-    // Score and sort results by accuracy
     const scoredResults = validResults.map((sr) => ({
       ...sr,
       score: this.calculateAccuracyScore(sr),
     }))
 
-    this.logger.debug({
-      scores: scoredResults.map((sr) => ({
-        service: sr.service,
-        score: sr.score,
-        status: sr.result.status,
-      })),
-    }, 'Scored results')
+    this.logger.debug(
+      {
+        scores: scoredResults.map((sr) => ({
+          service: sr.service,
+          score: sr.score,
+          status: sr.result.status,
+        })),
+      },
+      'Scored results',
+    )
 
     scoredResults.sort((a, b) => b.score - a.score)
 
-    // Best result (highest score)
     const bestResult = scoredResults[0]
 
-    this.logger.debug({
-      service: bestResult.service,
-      score: bestResult.score,
-    }, 'Best result selected')
+    this.logger.debug(
+      {
+        service: bestResult.service,
+        score: bestResult.score,
+      },
+      'Best result selected',
+    )
 
-    // Build list of unique addresses
     const uniqueAddresses = this.deduplicateAddresses(scoredResults)
 
-    this.logger.debug({
-      uniqueCount: uniqueAddresses.length,
-    }, 'Addresses after deduplication')
+    this.logger.debug(
+      {
+        uniqueCount: uniqueAddresses.length,
+      },
+      'Addresses after deduplication',
+    )
 
-    // Only include alt if there are multiple unique addresses
     const alt =
       uniqueAddresses.length > 1
         ? uniqueAddresses.map((ua) => ({
@@ -201,42 +235,20 @@ export class AddressServiceOrchestrator {
   private calculateAccuracyScore(serviceResult: ServiceResult): number {
     let score = 0
 
-    // Base score from status (valid > corrected > unverifiable)
-    switch (serviceResult.result.status) {
-      case 'valid':
-        score += 100
-        break
-      case 'corrected':
-        score += 50
-        break
-      case 'unverifiable':
-        score += 0
-        break
-    }
+    score += AddressServiceOrchestrator.SCORE_WEIGHTS.STATUS[serviceResult.result.status]
 
-    // Bonus points for having complete address information
     const address = serviceResult.result.address
     if (address) {
-      if (address.number) score += 20
-      if (address.street) score += 15
-      if (address.city) score += 10
-      if (address.state) score += 10
-      if (address.zip) score += 10
-      if (address.coordinates) score += 5
+      if (address.number) score += AddressServiceOrchestrator.SCORE_WEIGHTS.COMPONENTS.number
+      if (address.street) score += AddressServiceOrchestrator.SCORE_WEIGHTS.COMPONENTS.street
+      if (address.city) score += AddressServiceOrchestrator.SCORE_WEIGHTS.COMPONENTS.city
+      if (address.state) score += AddressServiceOrchestrator.SCORE_WEIGHTS.COMPONENTS.state
+      if (address.zip) score += AddressServiceOrchestrator.SCORE_WEIGHTS.COMPONENTS.zip
+      if (address.coordinates)
+        score += AddressServiceOrchestrator.SCORE_WEIGHTS.COMPONENTS.coordinates
     }
 
-    // Service-specific bonuses (based on known accuracy from discovery doc)
-    switch (serviceResult.service) {
-      case 'google':
-        score += 10 // Google Maps is known for high accuracy
-        break
-      case 'azure':
-        score += 7 // Azure Maps with TomTom data, between Google and Geocodio
-        break
-      case 'geocodio':
-        score += 5
-        break
-    }
+    score += AddressServiceOrchestrator.SCORE_WEIGHTS.SERVICES[serviceResult.service]
 
     return score
   }

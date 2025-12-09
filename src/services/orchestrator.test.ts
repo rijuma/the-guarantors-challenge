@@ -32,6 +32,9 @@ describe('AddressServiceOrchestrator', () => {
       })
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGoogleGeocodeResponse()),
       })
 
@@ -74,11 +77,17 @@ describe('AddressServiceOrchestrator', () => {
         if (callCount === 1) {
           // Google Maps response
           return Promise.resolve({
+            ok: true,
+            status: 200,
+            statusText: 'OK',
             json: () => Promise.resolve(mockGoogleGeocodeResponse()),
           })
         } else {
           // Geocodio response
           return Promise.resolve({
+            ok: true,
+            status: 200,
+            statusText: 'OK',
             json: () => Promise.resolve(mockGeocodioResponse()),
           })
         }
@@ -103,6 +112,9 @@ describe('AddressServiceOrchestrator', () => {
         if (callCount === 1) {
           // Google Maps - returns 1600 Amphitheatre Parkway
           return Promise.resolve({
+            ok: true,
+            status: 200,
+            statusText: 'OK',
             json: () => Promise.resolve(mockGoogleGeocodeResponse()),
           })
         } else {
@@ -111,6 +123,9 @@ describe('AddressServiceOrchestrator', () => {
           geocodioResponse.results[0].address_components.formatted_street = 'Different St'
           geocodioResponse.results[0].address_components.street = 'Different'
           return Promise.resolve({
+            ok: true,
+            status: 200,
+            statusText: 'OK',
             json: () => Promise.resolve(geocodioResponse),
           })
         }
@@ -130,6 +145,9 @@ describe('AddressServiceOrchestrator', () => {
       })
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGoogleGeocodeResponse()),
       })
 
@@ -151,6 +169,9 @@ describe('AddressServiceOrchestrator', () => {
         if (callCount === 1) {
           // Google Maps succeeds
           return Promise.resolve({
+            ok: true,
+            status: 200,
+            statusText: 'OK',
             json: () => Promise.resolve(mockGoogleGeocodeResponse()),
           })
         } else {
@@ -215,6 +236,9 @@ describe('AddressServiceOrchestrator', () => {
         } else {
           // Geocodio returns high accuracy (valid)
           return Promise.resolve({
+            ok: true,
+            status: 200,
+            statusText: 'OK',
             json: () => Promise.resolve(mockGeocodioResponse()),
           })
         }
@@ -247,6 +271,9 @@ describe('AddressServiceOrchestrator', () => {
         } else {
           // Geocodio returns complete address
           return Promise.resolve({
+            ok: true,
+            status: 200,
+            statusText: 'OK',
             json: () => Promise.resolve(mockGeocodioResponse()),
           })
         }
@@ -268,6 +295,9 @@ describe('AddressServiceOrchestrator', () => {
 
       // Both services return essentially the same address
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGoogleGeocodeResponse()),
       })
 

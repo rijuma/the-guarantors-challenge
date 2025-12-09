@@ -1,9 +1,5 @@
 import { AddressService, type ValidationResult } from '../base/address-service'
-import {
-  geocodeResponseSchema,
-  type GeocodeResult,
-  type AddressComponent,
-} from './schemas'
+import { geocodeResponseSchema, type GeocodeResult, type AddressComponent } from './schemas'
 import type { StandardizedAddress, AddressValidationStatus } from '@/schemas/address'
 
 export class GoogleMapsService extends AddressService {
@@ -23,6 +19,9 @@ export class GoogleMapsService extends AddressService {
 
     try {
       const response = await this.fetchWithTimeout(url)
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+
       const rawData = await response.json()
       return this.parseResponse(rawData)
     } catch (error) {
@@ -41,7 +40,6 @@ export class GoogleMapsService extends AddressService {
     }
 
     const { results, status } = parsed.data
-
 
     if (status !== 'OK' || results.length === 0) {
       return { address: null, status: 'unverifiable', rawResponse }

@@ -3,6 +3,7 @@ import { geocodioResponseSchema, type GeocodioResult } from './schemas'
 import type { StandardizedAddress, AddressValidationStatus } from '@/schemas/address'
 
 export class GeocodioService extends AddressService {
+  private static readonly MIN_ACCURACY_FOR_VALID = 0.8
   private readonly baseUrl = 'https://api.geocod.io/v1.7/geocode'
 
   protected buildRequestUrl(address: string): string {
@@ -19,6 +20,9 @@ export class GeocodioService extends AddressService {
 
     try {
       const response = await this.fetchWithTimeout(url)
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+
       const rawData = await response.json()
       return this.parseResponse(rawData)
     } catch (error) {
@@ -61,7 +65,7 @@ export class GeocodioService extends AddressService {
     // Lower accuracy or less specific types suggest correction/inference was needed
 
     const highAccuracyTypes = ['rooftop', 'range_interpolation', 'point']
-    const isHighAccuracy = result.accuracy >= 0.8
+    const isHighAccuracy = result.accuracy >= GeocodioService.MIN_ACCURACY_FOR_VALID
     const isPreciseType = highAccuracyTypes.includes(result.accuracy_type)
 
     if (isHighAccuracy && isPreciseType) {

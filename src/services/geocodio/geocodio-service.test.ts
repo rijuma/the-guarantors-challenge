@@ -40,6 +40,9 @@ describe('GeocodioService', () => {
 
     it('returns corrected status for low accuracy match', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGeocodioLowAccuracyResponse()),
       })
 
@@ -51,6 +54,9 @@ describe('GeocodioService', () => {
 
     it('returns unverifiable status for zero results', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGeocodioZeroResultsResponse()),
       })
 
@@ -62,6 +68,9 @@ describe('GeocodioService', () => {
 
     it('returns unverifiable for invalid response structure', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve({ invalid: 'response' }),
       })
 
@@ -92,6 +101,9 @@ describe('GeocodioService', () => {
       }
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(incompleteResponse),
       })
 
@@ -115,6 +127,9 @@ describe('GeocodioService', () => {
 
     it('builds correct request URL', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGeocodioResponse()),
       })
 
@@ -138,6 +153,9 @@ describe('GeocodioService', () => {
   describe('address extraction', () => {
     it('handles missing street number', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGeocodioWithoutNumberResponse()),
       })
 
@@ -149,6 +167,9 @@ describe('GeocodioService', () => {
 
     it('uses formatted_street when available', async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(mockGeocodioResponse()),
       })
 
@@ -165,6 +186,9 @@ describe('GeocodioService', () => {
       response.results[0].accuracy_type = 'rooftop'
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(response),
       })
 
@@ -178,6 +202,9 @@ describe('GeocodioService', () => {
       response.results[0].accuracy_type = 'range_interpolation'
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(response),
       })
 
@@ -191,6 +218,9 @@ describe('GeocodioService', () => {
       response.results[0].accuracy_type = 'rooftop'
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(response),
       })
 
@@ -204,6 +234,9 @@ describe('GeocodioService', () => {
       response.results[0].accuracy_type = 'street_center'
 
       mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
         json: () => Promise.resolve(response),
       })
 

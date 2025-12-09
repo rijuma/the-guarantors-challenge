@@ -3,6 +3,8 @@ import { azureMapsResponseSchema, type AzureMapsResult } from './schemas'
 import type { StandardizedAddress, AddressValidationStatus } from '@/schemas/address'
 
 export class AzureMapsService extends AddressService {
+  private static readonly MIN_SCORE_FOR_VALID = 8.0
+  private static readonly MIN_SCORE_THRESHOLD = 5.0
   private readonly baseUrl = 'https://atlas.microsoft.com/search/address/json'
 
   protected buildRequestUrl(address: string): string {
@@ -21,6 +23,11 @@ export class AzureMapsService extends AddressService {
 
     try {
       const response = await this.fetchWithTimeout(url)
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
       const rawData = await response.json()
       return this.parseResponse(rawData)
     } catch (error) {
@@ -64,15 +71,11 @@ export class AzureMapsService extends AddressService {
     fuzzyLevel?: number,
   ): AddressValidationStatus {
     const isExactMatch = result.matchType === 'AddressPoint'
-    const hasHighScore = result.score >= 8.0
+    const hasHighScore = result.score >= AzureMapsService.MIN_SCORE_FOR_VALID
     const noFuzzyMatching = !fuzzyLevel || fuzzyLevel === 1
 
     if (isExactMatch && hasHighScore && noFuzzyMatching) {
       return 'valid'
-    }
-
-    if (result.score < 5.0) {
-      return 'corrected'
     }
 
     return 'corrected'

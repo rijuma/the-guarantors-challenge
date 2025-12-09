@@ -23,6 +23,9 @@ export function createMockLogger(): FastifyBaseLogger {
  */
 export function mockFetchResponse(mockFetch: Mock, data: unknown): void {
   mockFetch.mockResolvedValue({
+    ok: true,
+    status: 200,
+    statusText: 'OK',
     json: () => Promise.resolve(data),
   })
 }
