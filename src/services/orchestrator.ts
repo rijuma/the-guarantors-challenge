@@ -2,7 +2,7 @@ import type { FastifyBaseLogger } from 'fastify'
 import type { AddressService, ValidationResult } from './base/address-service'
 import { GoogleMapsService } from './google-maps/google-maps-service'
 import { GeocodioService } from './geocodio/geocodio-service'
-import type { GeoServiceName } from '../config/env'
+import { env, type GeoServiceName } from '../config/env'
 import type { StandardizedAddress, AddressValidationStatus } from '../schemas/address'
 
 interface ServiceResult {
@@ -20,9 +20,9 @@ export interface OrchestratedResult {
   alt?: AddressWithService[]
 }
 
-interface ServiceConfig {
-  timeout: number
-  apiKey: string
+export interface OrchestratorOptions {
+  serviceNames: GeoServiceName[]
+  logger: FastifyBaseLogger
 }
 
 export class AddressServiceOrchestrator {
@@ -30,30 +30,35 @@ export class AddressServiceOrchestrator {
   private requestCache: Map<string, Promise<OrchestratedResult>> = new Map()
   private logger: FastifyBaseLogger
 
-  constructor(
-    serviceNames: GeoServiceName[],
-    serviceConfigs: Record<GeoServiceName, ServiceConfig>,
-    logger: FastifyBaseLogger,
-  ) {
-    this.logger = logger
+  constructor(options: OrchestratorOptions) {
+    this.logger = options.logger
 
-    for (const serviceName of serviceNames) {
-      const config = serviceConfigs[serviceName]
-      if (!config) {
-        throw new Error(`Configuration missing for service: ${serviceName}`)
-      }
-
-      const service = this.createService(serviceName, config)
+    for (const serviceName of options.serviceNames) {
+      const service = this.createService(serviceName)
       this.services.set(serviceName, service)
     }
   }
 
-  private createService(name: GeoServiceName, config: ServiceConfig): AddressService {
+  private createService(name: GeoServiceName): AddressService {
+    const timeout = env.ADDRESS_SERVICE_TIMEOUT
+
     switch (name) {
       case 'google-maps':
-        return new GoogleMapsService(config)
+        if (!env.GOOGLE_MAPS_API_KEY) {
+          throw new Error('GOOGLE_MAPS_API_KEY is required for google-maps service')
+        }
+        return new GoogleMapsService({
+          timeout,
+          apiKey: env.GOOGLE_MAPS_API_KEY,
+        })
       case 'geocodio':
-        return new GeocodioService(config)
+        if (!env.GEOCODIO_API_KEY) {
+          throw new Error('GEOCODIO_API_KEY is required for geocodio service')
+        }
+        return new GeocodioService({
+          timeout,
+          apiKey: env.GEOCODIO_API_KEY,
+        })
       default:
         throw new Error(`Unknown service: ${name}`)
     }

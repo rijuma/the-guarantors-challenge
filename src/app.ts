@@ -4,7 +4,7 @@ import swagger from '@fastify/swagger'
 import swaggerUi from '@fastify/swagger-ui'
 import { env } from './config/env'
 import { AddressCache } from './cache/address-cache'
-import { createAddressService, createAddressServiceOrchestrator } from './services/index'
+import { createAddressServiceOrchestrator } from './services/index'
 import { registerRateLimit } from './plugins/rate-limit'
 import { validateAddressRoute } from './routes/validate-address'
 
@@ -68,9 +68,6 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     ttlMs: env.CACHE_TTL_MS,
   })
   app.decorate('addressCache', addressCache)
-
-  const addressService = createAddressService()
-  app.decorate('addressService', addressService)
 
   const addressOrchestrator = createAddressServiceOrchestrator(app.log)
   app.decorate('addressOrchestrator', addressOrchestrator)
