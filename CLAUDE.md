@@ -10,3 +10,7 @@ This is a Node.js application with TypeScript using Fastify to develop an API th
 - Small functions.
 - Follow single responsibility principle in classes and functions.
 - Code coverage is paramount.
+
+# Project context
+
+- Discovery and project context docs are saved within the ./docs/ folder.
