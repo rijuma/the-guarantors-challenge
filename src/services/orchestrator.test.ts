@@ -3,9 +3,10 @@ import type { FastifyBaseLogger } from 'fastify'
 import { AddressServiceOrchestrator } from './orchestrator'
 import { mockGoogleGeocodeResponse, mockGooglePartialMatchResponse } from './google-maps/fixtures'
 import { mockGeocodioResponse } from './geocodio/fixtures'
+import { createMockLogger } from '@/test/test-utils'
 
 // Mock env module
-vi.mock('../config/env', () => ({
+vi.mock('@/config/env', () => ({
   env: {
     ADDRESS_SERVICE_TIMEOUT: 5000,
     GOOGLE_MAPS_API_KEY: 'google-test-key',
@@ -20,16 +21,7 @@ describe('AddressServiceOrchestrator', () => {
   beforeEach(() => {
     mockFetch = vi.fn()
     vi.stubGlobal('fetch', mockFetch)
-
-    mockLogger = {
-      debug: vi.fn(),
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      fatal: vi.fn(),
-      trace: vi.fn(),
-      child: vi.fn(() => mockLogger),
-    } as unknown as FastifyBaseLogger
+    mockLogger = createMockLogger()
   })
 
   describe('single service', () => {

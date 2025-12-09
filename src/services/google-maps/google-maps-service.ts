@@ -4,7 +4,7 @@ import {
   type GeocodeResult,
   type AddressComponent,
 } from './schemas'
-import type { StandardizedAddress, AddressValidationStatus } from '../../schemas/address'
+import type { StandardizedAddress, AddressValidationStatus } from '@/schemas/address'
 
 export class GoogleMapsService extends AddressService {
   private readonly baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json'

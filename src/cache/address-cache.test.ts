@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { AddressCache } from './address-cache'
-import type { ValidateAddressResponse } from '../schemas/address'
+import type { ValidateAddressResponse } from '@/schemas/address'
+import { createMockLogger } from '@/test/test-utils'
 
 describe('AddressCache', () => {
   let cache: AddressCache
@@ -9,6 +10,7 @@ describe('AddressCache', () => {
     cache = new AddressCache({
       maxSize: 100,
       ttlMs: 60000,
+      logger: createMockLogger(),
     })
   })
 

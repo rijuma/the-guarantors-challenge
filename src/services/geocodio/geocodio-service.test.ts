@@ -6,6 +6,7 @@ import {
   mockGeocodioLowAccuracyResponse,
   mockGeocodioWithoutNumberResponse,
 } from './fixtures'
+import { mockFetchResponse, mockFetchError, createAbortError } from '@/test/test-utils'
 
 describe('GeocodioService', () => {
   let service: GeocodioService
@@ -22,9 +23,7 @@ describe('GeocodioService', () => {
 
   describe('validate', () => {
     it('returns valid status for high accuracy rooftop match', async () => {
-      mockFetch.mockResolvedValue({
-        json: () => Promise.resolve(mockGeocodioResponse()),
-      })
+      mockFetchResponse(mockFetch, mockGeocodioResponse())
 
       const result = await service.validate('1600 Amphitheatre Parkway, Mountain View, CA')
 
@@ -103,15 +102,13 @@ describe('GeocodioService', () => {
     })
 
     it('throws on timeout', async () => {
-      const abortError = new Error('Aborted')
-      abortError.name = 'AbortError'
-      mockFetch.mockRejectedValue(abortError)
+      mockFetchError(mockFetch, createAbortError())
 
       await expect(service.validate('test')).rejects.toThrow('Address service timeout')
     })
 
     it('rethrows other errors', async () => {
-      mockFetch.mockRejectedValue(new Error('Network error'))
+      mockFetchError(mockFetch, new Error('Network error'))
 
       await expect(service.validate('test')).rejects.toThrow('Network error')
     })

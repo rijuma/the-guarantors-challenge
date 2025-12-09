@@ -1,6 +1,6 @@
 import { AddressService, type ValidationResult } from '../base/address-service'
 import { geocodioResponseSchema, type GeocodioResult } from './schemas'
-import type { StandardizedAddress, AddressValidationStatus } from '../../schemas/address'
+import type { StandardizedAddress, AddressValidationStatus } from '@/schemas/address'
 
 export class GeocodioService extends AddressService {
   private readonly baseUrl = 'https://api.geocod.io/v1.7/geocode'

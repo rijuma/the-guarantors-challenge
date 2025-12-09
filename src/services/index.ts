@@ -1,5 +1,5 @@
 import type { FastifyBaseLogger } from 'fastify'
-import { env } from '../config/env'
+import { env } from '@/config/env'
 import { AddressServiceOrchestrator } from './orchestrator'
 
 export { AddressService } from './base/address-service'

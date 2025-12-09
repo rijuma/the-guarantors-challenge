@@ -1,9 +1,12 @@
 import { LRUCache } from 'lru-cache'
-import type { ValidateAddressResponse } from '../schemas/address'
+import type { FastifyBaseLogger } from 'fastify'
+import type { ValidateAddressResponse } from '@/schemas/address'
+import { getCacheKey } from '@/utils'
 
 export interface AddressCacheOptions {
   maxSize: number
   ttlMs: number
+  logger: FastifyBaseLogger
 }
 
 type PendingRequest = Promise<ValidateAddressResponse>
@@ -11,6 +14,7 @@ type PendingRequest = Promise<ValidateAddressResponse>
 export class AddressCache {
   private readonly cache: LRUCache<string, ValidateAddressResponse>
   private readonly pendingRequests: Map<string, PendingRequest>
+  private readonly logger: FastifyBaseLogger
 
   constructor(options: AddressCacheOptions) {
     this.cache = new LRUCache<string, ValidateAddressResponse>({
@@ -18,19 +22,20 @@ export class AddressCache {
       ttl: options.ttlMs,
     })
     this.pendingRequests = new Map()
-  }
-
-  private normalizeKey(address: string): string {
-    return address.toLowerCase().trim().replace(/\s+/g, ' ')
+    this.logger = options.logger
   }
 
   get(address: string): ValidateAddressResponse | undefined {
-    const key = this.normalizeKey(address)
-    return this.cache.get(key)
+    const key = getCacheKey(address)
+    const result = this.cache.get(key)
+    if (result) {
+      this.logger.debug({ address, key }, 'Cache hit')
+    }
+    return result
   }
 
   set(address: string, response: ValidateAddressResponse): void {
-    const key = this.normalizeKey(address)
+    const key = getCacheKey(address)
     if (response.status !== 'unverifiable') {
       this.cache.set(key, response)
     }
@@ -40,15 +45,17 @@ export class AddressCache {
     address: string,
     fetcher: () => Promise<ValidateAddressResponse>,
   ): Promise<ValidateAddressResponse> {
-    const key = this.normalizeKey(address)
+    const key = getCacheKey(address)
 
     const cached = this.cache.get(key)
     if (cached) {
+      this.logger.debug({ address, key }, 'Cache hit')
       return cached
     }
 
     const pending = this.pendingRequests.get(key)
     if (pending) {
+      this.logger.debug({ address, key }, 'Request coalescing - returning pending promise')
       return pending
     }
 

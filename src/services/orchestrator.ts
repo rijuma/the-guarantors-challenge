@@ -2,8 +2,9 @@ import type { FastifyBaseLogger } from 'fastify'
 import type { AddressService, ValidationResult } from './base/address-service'
 import { GoogleMapsService } from './google-maps/google-maps-service'
 import { GeocodioService } from './geocodio/geocodio-service'
-import { env, type GeoServiceName } from '../config/env'
-import type { StandardizedAddress, AddressValidationStatus } from '../schemas/address'
+import { env, type GeoServiceName } from '@/config/env'
+import type { StandardizedAddress, AddressValidationStatus } from '@/schemas/address'
+import { getCacheKey } from '@/utils'
 
 interface ServiceResult {
   service: GeoServiceName
@@ -251,16 +252,12 @@ export class AddressServiceOrchestrator {
   }
 
   private normalizeAddressKey(address: StandardizedAddress): string {
-    // Normalize for comparison (lowercase, trim, remove extra spaces)
-    const normalize = (str: string | null | undefined): string =>
-      (str || '').toLowerCase().trim().replace(/\s+/g, ' ')
-
     return [
-      normalize(address.number),
-      normalize(address.street),
-      normalize(address.city),
-      normalize(address.state),
-      normalize(address.zip),
+      getCacheKey(address.number),
+      getCacheKey(address.street),
+      getCacheKey(address.city),
+      getCacheKey(address.state),
+      getCacheKey(address.zip),
     ].join('|')
   }
 }

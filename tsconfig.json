@@ -12,8 +12,12 @@
     "isolatedModules": true,
     "noEmit": true,
     "types": ["node"],
-    "allowImportingTsExtensions": false
+    "allowImportingTsExtensions": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/test-setup.ts", "src/**/fixtures.ts"]
+  "exclude": ["node_modules", "dist"]
 }
