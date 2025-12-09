@@ -5,6 +5,7 @@ const envSchema = z.object({
   PORT: z.string().default('3000').transform(Number),
   HOST: z.string().default('0.0.0.0'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  API_DOMAIN: z.string().default('http://localhost:3000'),
 
   API_TOKEN: z.string().min(1),
 

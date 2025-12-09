@@ -1,16 +1,121 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { validateAddressRequestSchema, type ValidateAddressResponse } from '../schemas/address.js'
 import { perSecondRateLimit } from '../plugins/rate-limit.js'
+import { verifyAuth } from '../plugins/auth.js'
 
 interface ValidateAddressBody {
   address: string
+}
+
+const routeSchema = {
+  description: 'Validate and standardize a US property address',
+  tags: ['Address Validation'],
+  summary: 'Validate address',
+  body: {
+    type: 'object',
+    required: ['address'],
+    properties: {
+      address: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 500,
+        description: 'Free-form address text to validate',
+      },
+    },
+    examples: [
+      { address: '1600 Amphitheatre Parkway, Mountain View, CA' },
+    ],
+  },
+  response: {
+    200: {
+      description: 'Successfully validated address',
+      type: 'object',
+      properties: {
+        address: {
+          type: 'object',
+          nullable: true,
+          properties: {
+            street: { type: 'string' },
+            number: { type: 'string', nullable: true },
+            city: { type: 'string' },
+            state: { type: 'string' },
+            zip: { type: 'string' },
+          },
+        },
+        status: {
+          type: 'string',
+          enum: ['valid', 'corrected', 'unverifiable'],
+          description: 'Validation status: valid (exact match), corrected (fixed typos/missing info), unverifiable (could not validate)',
+        },
+      },
+      examples: [
+        {
+          address: {
+            street: 'Amphitheatre Pkwy',
+            number: '1600',
+            city: 'Mountain View',
+            state: 'CA',
+            zip: '94043',
+          },
+          status: 'valid',
+        },
+      ],
+    },
+    400: {
+      description: 'Invalid request body',
+      type: 'object',
+      properties: {
+        statusCode: { type: 'integer' },
+        error: { type: 'string' },
+        message: { type: 'string' },
+      },
+    },
+    401: {
+      description: 'Unauthorized - missing or invalid API token',
+      type: 'object',
+      properties: {
+        statusCode: { type: 'integer' },
+        error: { type: 'string' },
+        message: { type: 'string' },
+      },
+    },
+    429: {
+      description: 'Too many requests - rate limit exceeded',
+      type: 'object',
+      properties: {
+        statusCode: { type: 'integer' },
+        error: { type: 'string' },
+        message: { type: 'string' },
+      },
+    },
+    502: {
+      description: 'External service error',
+      type: 'object',
+      properties: {
+        statusCode: { type: 'integer' },
+        error: { type: 'string' },
+        message: { type: 'string' },
+      },
+    },
+    503: {
+      description: 'Address service timeout',
+      type: 'object',
+      properties: {
+        statusCode: { type: 'integer' },
+        error: { type: 'string' },
+        message: { type: 'string' },
+      },
+    },
+  },
 }
 
 export async function validateAddressRoute(fastify: FastifyInstance): Promise<void> {
   fastify.post<{ Body: ValidateAddressBody }>(
     '/validate-address',
     {
+      schema: routeSchema,
       config: perSecondRateLimit,
+      preHandler: verifyAuth,
     },
     async (request: FastifyRequest<{ Body: ValidateAddressBody }>, reply: FastifyReply) => {
       const parseResult = validateAddressRequestSchema.safeParse(request.body)
@@ -28,11 +133,10 @@ export async function validateAddressRoute(fastify: FastifyInstance): Promise<vo
       try {
         const response = await fastify.addressCache.getOrFetch(address, async () => {
           const result = await fastify.addressService.validate(address)
-          
+
           return {
             address: result.address,
             status: result.status,
-            originalInput: address,
           }
         })
 

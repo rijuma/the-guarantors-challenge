@@ -23,7 +23,6 @@ export type StandardizedAddress = z.infer<typeof standardizedAddressSchema>
 export const validateAddressResponseSchema = z.object({
   address: standardizedAddressSchema.nullable(),
   status: addressValidationStatusSchema,
-  originalInput: z.string(),
 })
 
 export type ValidateAddressResponse = z.infer<typeof validateAddressResponseSchema>

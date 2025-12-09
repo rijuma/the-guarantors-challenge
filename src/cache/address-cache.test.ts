@@ -21,7 +21,6 @@ describe('AddressCache', () => {
       zip: '62701',
     },
     status: 'valid',
-    originalInput: '123 Main St, Springfield, IL',
   }
 
   describe('get and set', () => {
@@ -40,7 +39,6 @@ describe('AddressCache', () => {
       const unverifiable: ValidateAddressResponse = {
         address: null,
         status: 'unverifiable',
-        originalInput: 'invalid',
       }
       cache.set('invalid', unverifiable)
       expect(cache.get('invalid')).toBeUndefined()
@@ -89,7 +87,6 @@ describe('AddressCache', () => {
       const unverifiable: ValidateAddressResponse = {
         address: null,
         status: 'unverifiable',
-        originalInput: 'invalid',
       }
       const fetcher = vi.fn().mockResolvedValue(unverifiable)
 
