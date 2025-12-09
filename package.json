@@ -2,15 +2,35 @@
   "name": "the-guarantors-challenge",
   "version": "1.0.0",
   "description": "TheGuarantors Code challenge",
-  "main": "index.js",
+  "type": "module",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "prettier --check src tests",
+    "format": "prettier --write src tests"
   },
   "keywords": [],
   "author": "Juan Marcos Rigoli",
   "license": "ISC",
   "packageManager": "pnpm@10.25.0",
   "dependencies": {
-    "fastify": "^5.6.2"
+    "@fastify/rate-limit": "^10.3.0",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.2",
+    "fastify-plugin": "^5.1.0",
+    "lru-cache": "^11.2.4",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.2",
+    "@vitest/coverage-v8": "^4.0.15",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   }
 }
