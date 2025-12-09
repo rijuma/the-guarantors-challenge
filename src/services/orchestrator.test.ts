@@ -3,7 +3,7 @@ import type { FastifyBaseLogger } from 'fastify'
 import { AddressServiceOrchestrator } from './orchestrator'
 import { mockGoogleGeocodeResponse, mockGooglePartialMatchResponse } from './google-maps/fixtures'
 import { mockGeocodioResponse } from './geocodio/fixtures'
-import { createMockLogger } from '@/test/test-utils'
+import { createMockLogger } from '@/test'
 
 // Mock env module
 vi.mock('@/config/env', () => ({

@@ -7,7 +7,7 @@ import {
   mockAzureMapsLowScoreResponse,
   mockAzureMapsWithoutNumberResponse,
 } from './fixtures'
-import { mockFetchResponse, mockFetchError, createAbortError } from '@/test/test-utils'
+import { mockFetchResponse, mockFetchError, createAbortError } from '@/test'
 
 describe('AzureMapsService', () => {
   let service: AzureMapsService

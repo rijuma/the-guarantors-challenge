@@ -40,7 +40,7 @@ December 9, 2025
 
 **Changes:**
 - Added `GEO_SERVICES` variable with validation
-  - Accepts comma-separated list: `google-maps`, `geocodio`
+  - Accepts comma-separated list: `google`, `geocodio`, `azure`
   - Validates that at least one service is configured
   - Ensures required API keys are present for selected services
 - Made API keys optional but validates they exist when service is enabled
@@ -144,15 +144,23 @@ All tests passing (47 total):
 
 ### Single Service
 ```bash
-GEO_SERVICES=google-maps
+GEO_SERVICES=google
 GOOGLE_MAPS_API_KEY=your-key
 ```
 
 ### Multiple Services (Recommended)
 ```bash
-GEO_SERVICES=google-maps,geocodio
+GEO_SERVICES=google,geocodio
 GOOGLE_MAPS_API_KEY=your-google-key
 GEOCODIO_API_KEY=your-geocodio-key
+```
+
+### All Three Services
+```bash
+GEO_SERVICES=google,geocodio,azure
+GOOGLE_MAPS_API_KEY=your-google-key
+GEOCODIO_API_KEY=your-geocodio-key
+AZURE_MAPS_API_KEY=your-azure-key
 ```
 
 ## API Response Format
@@ -171,7 +179,7 @@ GEOCODIO_API_KEY=your-geocodio-key
   "address": { ... },
   "status": "valid",
   "alt": [
-    { ..., "service": "google-maps" },
+    { ..., "service": "google" },
     { ..., "service": "geocodio" }
   ]
 }
@@ -207,7 +215,7 @@ To add a new geocoding service:
 
 2. Add to supported services in `src/config/env.ts`
    ```typescript
-   const SUPPORTED_GEO_SERVICES = ['google-maps', 'geocodio', 'new-service']
+   const SUPPORTED_GEO_SERVICES = ['google', 'geocodio', 'azure', 'new-service']
    ```
 
 3. Update orchestrator factory in `src/services/orchestrator.ts`

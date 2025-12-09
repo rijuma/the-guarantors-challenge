@@ -6,7 +6,7 @@ import {
   mockGeocodioLowAccuracyResponse,
   mockGeocodioWithoutNumberResponse,
 } from './fixtures'
-import { mockFetchResponse, mockFetchError, createAbortError } from '@/test/test-utils'
+import { mockFetchResponse, mockFetchError, createAbortError } from '@/test'
 
 describe('GeocodioService', () => {
   let service: GeocodioService
@@ -34,7 +34,7 @@ describe('GeocodioService', () => {
         city: 'Mountain View',
         state: 'CA',
         zip: '94043',
-        coordinates: [37.422408, -122.084160],
+        coordinates: [37.422408, -122.08416],
       })
     })
 

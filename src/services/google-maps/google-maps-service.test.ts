@@ -5,7 +5,7 @@ import {
   mockGoogleZeroResultsResponse,
   mockGooglePartialMatchResponse,
 } from './fixtures'
-import { mockFetchError, createAbortError } from '@/test/test-utils'
+import { mockFetchError, createAbortError } from '@/test'
 
 describe('GoogleMapsService', () => {
   let service: GoogleMapsService
@@ -177,9 +177,7 @@ describe('GoogleMapsService', () => {
     it('handles missing route', async () => {
       const responseWithoutRoute = mockGoogleGeocodeResponse()
       responseWithoutRoute.results[0].address_components =
-        responseWithoutRoute.results[0].address_components.filter(
-          (c) => !c.types.includes('route'),
-        )
+        responseWithoutRoute.results[0].address_components.filter((c) => !c.types.includes('route'))
 
       mockFetch.mockResolvedValue({
         ok: true,
