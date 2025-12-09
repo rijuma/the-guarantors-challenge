@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
 import type { FastifyBaseLogger } from 'fastify'
 import { AddressServiceOrchestrator } from './orchestrator'
-import { mockGoogleGeocodeResponse, mockGooglePartialMatchResponse } from './google-maps/fixtures'
+import { mockGoogleGeocodeResponse, mockGooglePartialMatchResponse } from './google/fixtures'
 import { mockGeocodioResponse } from './geocodio/fixtures'
 import { createMockLogger } from '@/test'
 
