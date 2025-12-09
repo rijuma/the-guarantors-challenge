@@ -1,0 +1,16 @@
+{
+  "name": "the-guarantors-challenge",
+  "version": "1.0.0",
+  "description": "TheGuarantors Code challenge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Juan Marcos Rigoli",
+  "license": "ISC",
+  "packageManager": "pnpm@10.25.0",
+  "dependencies": {
+    "fastify": "^5.6.2"
+  }
+}
