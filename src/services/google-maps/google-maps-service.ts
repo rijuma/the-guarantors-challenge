@@ -80,12 +80,15 @@ export class GoogleMapsService extends AddressService {
     const street = route ? route.long_name : ''
     const number = streetNumber ? streetNumber.long_name : null
 
+    const { lat, lng } = result.geometry.location
+
     return {
       street,
       number,
       city: locality.long_name,
       state: state.short_name,
       zip: postalCode.long_name,
+      coordinates: [lat, lng],
     }
   }
 }

@@ -19,6 +19,7 @@ describe('AddressCache', () => {
       city: 'Springfield',
       state: 'IL',
       zip: '62701',
+      coordinates: [39.7817, -89.6501],
     },
     status: 'valid',
   }

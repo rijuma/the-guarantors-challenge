@@ -10,12 +10,17 @@ export const addressValidationStatusSchema = z.enum(['valid', 'corrected', 'unve
 
 export type AddressValidationStatus = z.infer<typeof addressValidationStatusSchema>
 
+export const coordinatesSchema = z.tuple([z.number(), z.number()])
+
+export type Coordinates = z.infer<typeof coordinatesSchema>
+
 export const standardizedAddressSchema = z.object({
   street: z.string(),
   number: z.string().nullable(),
   city: z.string(),
   state: z.string(),
   zip: z.string(),
+  coordinates: coordinatesSchema.optional(),
 })
 
 export type StandardizedAddress = z.infer<typeof standardizedAddressSchema>

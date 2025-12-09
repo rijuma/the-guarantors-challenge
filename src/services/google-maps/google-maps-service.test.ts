@@ -34,6 +34,7 @@ describe('GoogleMapsService', () => {
         city: 'Mountain View',
         state: 'CA',
         zip: '94043',
+        coordinates: [37.4224764, -122.0842499],
       })
     })
 

@@ -40,6 +40,13 @@ const routeSchema = {
             city: { type: 'string' },
             state: { type: 'string' },
             zip: { type: 'string' },
+            coordinates: {
+              type: 'array',
+              items: { type: 'number' },
+              minItems: 2,
+              maxItems: 2,
+              description: 'Coordinates as [latitude, longitude]',
+            },
           },
         },
         status: {
@@ -56,6 +63,7 @@ const routeSchema = {
             city: 'Mountain View',
             state: 'CA',
             zip: '94043',
+            coordinates: [37.4224764, -122.0842499],
           },
           status: 'valid',
         },
