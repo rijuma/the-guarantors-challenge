@@ -187,24 +187,6 @@ The application automatically adjusts log levels based on the `NODE_ENV` environ
 
 - **Production** (`NODE_ENV=production`): Only info-level and above logs are shown
 
-Example debug output in development (structured JSON logs):
-
-```json
-{"level":20,"msg":"Starting address validation","address":"1600 Amphitheatre Parkway, Mountain View, CA","services":["google","geocodio","azure"]}
-{"level":20,"msg":"Calling service","service":"google"}
-{"level":20,"msg":"Service response","service":"google","status":"valid","address":{...},"hasRawResponse":true}
-{"level":20,"msg":"Service raw response","service":"google","rawResponse":{...}}
-{"level":20,"msg":"Calling service","service":"geocodio"}
-{"level":20,"msg":"Service response","service":"geocodio","status":"valid","address":{...}}
-{"level":20,"msg":"Calling service","service":"azure"}
-{"level":20,"msg":"Service response","service":"azure","status":"valid","address":{...}}
-{"level":20,"msg":"Filtered valid results","validCount":3,"totalCount":3}
-{"level":20,"msg":"Scored results","scores":[{"service":"google","score":170,"status":"valid"},{"service":"azure","score":167,"status":"valid"},{"service":"geocodio","score":165,"status":"valid"}]}
-{"level":20,"msg":"Best result selected","service":"google","score":170}
-{"level":20,"msg":"Addresses after deduplication","uniqueCount":1}
-{"level":20,"msg":"Validation complete","result":{...}}
-```
-
 You can see a full example logs for an address search on all three services [here](docs/example-logs.md).
 
 **Note**: Logs use Fastify's built-in logger (pino). The `dev` and `start:dev` scripts automatically use `pino-pretty` for human-readable output. Production (`start`) uses structured JSON logs for better parsing and analysis.
