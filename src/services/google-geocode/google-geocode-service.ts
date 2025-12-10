@@ -2,7 +2,7 @@ import { AddressService, type ValidationResult } from '../base/address-service'
 import { geocodeResponseSchema, type GeocodeResult, type AddressComponent } from './schemas'
 import type { StandardizedAddress, AddressValidationStatus } from '@/schemas/address'
 
-export class GoogleMapsService extends AddressService {
+export class GoogleGeocodeService extends AddressService {
   private readonly baseUrl = 'https://maps.googleapis.com/maps/api/geocode/json'
 
   protected buildRequestUrl(address: string): string {

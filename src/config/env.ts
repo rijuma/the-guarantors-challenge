@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { z } from 'zod'
 
-const SUPPORTED_GEO_SERVICES = ['google-maps', 'geocodio', 'azure', 'google-validation'] as const
+const SUPPORTED_GEO_SERVICES = ['google-geocode', 'geocodio', 'azure', 'google-validation'] as const
 
 export type GeoServiceName = (typeof SUPPORTED_GEO_SERVICES)[number]
 
@@ -19,7 +19,7 @@ const envSchema = z.object({
 
   GEO_SERVICES: z
     .string()
-    .default('google-maps')
+    .default('google-geocode')
     .transform((val) => val.split(',').map((s) => s.trim()))
     .pipe(z.array(z.enum(SUPPORTED_GEO_SERVICES)))
     .refine(
@@ -40,7 +40,7 @@ function loadEnv(): Env {
 
   if (!result.success) {
     console.error('Invalid environment variables:')
-    console.error(result.error.format())
+    console.error(z.prettifyError(result.error))
     process.exit(1)
   }
 
@@ -48,8 +48,8 @@ function loadEnv(): Env {
 
   // Validate that API keys are provided for the selected services
   for (const service of env.GEO_SERVICES) {
-    if (service === 'google-maps' && !env.GOOGLE_MAPS_API_KEY) {
-      console.error('GOOGLE_MAPS_API_KEY is required when google-maps is in GEO_SERVICES')
+    if (service === 'google-geocode' && !env.GOOGLE_MAPS_API_KEY) {
+      console.error('GOOGLE_MAPS_API_KEY is required when google-geocode is in GEO_SERVICES')
       process.exit(1)
     }
     if (service === 'google-validation' && !env.GOOGLE_MAPS_API_KEY) {

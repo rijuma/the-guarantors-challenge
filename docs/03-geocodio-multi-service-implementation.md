@@ -144,20 +144,20 @@ All tests passing (47 total):
 
 ### Single Service
 ```bash
-GEO_SERVICES=google-maps
+GEO_SERVICES=google-geocode
 GOOGLE_MAPS_API_KEY=your-key
 ```
 
 ### Multiple Services (Recommended)
 ```bash
-GEO_SERVICES=google-maps,geocodio
+GEO_SERVICES=google-geocode,geocodio
 GOOGLE_MAPS_API_KEY=your-google-key
 GEOCODIO_API_KEY=your-geocodio-key
 ```
 
 ### All Services
 ```bash
-GEO_SERVICES=google-maps,google-validation,geocodio,azure
+GEO_SERVICES=google-geocode,google-validation,geocodio,azure
 GOOGLE_MAPS_API_KEY=your-google-key
 GEOCODIO_API_KEY=your-geocodio-key
 AZURE_MAPS_API_KEY=your-azure-key

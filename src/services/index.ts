@@ -3,7 +3,7 @@ import { env } from '@/config/env'
 import { AddressServiceOrchestrator } from './orchestrator'
 
 export { AddressService } from './base/address-service'
-export { GoogleMapsService } from './google-maps/google-maps-service'
+export { GoogleGeocodeService } from './google-geocode/google-geocode-service'
 export { GoogleValidationService } from './google-validation/google-validation-service'
 export { GeocodioService } from './geocodio/geocodio-service'
 export { AddressServiceOrchestrator } from './orchestrator'

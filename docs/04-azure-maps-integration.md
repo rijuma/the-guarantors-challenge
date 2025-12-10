@@ -88,13 +88,14 @@ The Azure Maps service includes comprehensive test coverage (97%+) across:
 - Request URL construction
 - Edge cases and missing data
 
-## Service Naming Simplification
+## Service Naming
 
-During implementation, service names were simplified for clarity:
+The service uses descriptive names for clarity:
 
-- `google-maps` → `google`
-- `azure-maps` → `azure`
-- `geocodio` → (unchanged)
+- Google Geocoding API → `google-geocode`
+- Google Address Validation API → `google-validation`
+- Azure Maps Search API → `azure`
+- Geocodio API → `geocodio`
 
 This affects environment variable configuration and API response service identifiers.
 

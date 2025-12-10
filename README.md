@@ -51,9 +51,10 @@ The API implements a service orchestration layer that supports multiple geocodin
 
 #### Supported Services
 
-- **Google Maps Geocoding API**: High accuracy geocoding service with excellent typo tolerance
-- **Azure Maps Search API**: High accuracy geocoding with TomTom data and strong typo tolerance
-- **Geocodio**: Cost-effective geocoding service with generous free tier
+- **`google-validation`: Google Maps Address Validator**: New Google API which incorporates USPS standardized data
+- **`google-geocode`: Google Maps Geocoding API**: High accuracy geocoding service with excellent typo tolerance
+- **`azure`: Azure Maps Search API**: High accuracy geocoding with TomTom data and strong typo tolerance
+- **`geocodio`: Geocodio**: Cost-effective geocoding service with generous free tier
 
 #### Configuration
 
@@ -61,7 +62,7 @@ Services are configured via the `GEO_SERVICES` environment variable as a comma-s
 
 ```bash
 # Use only Google Maps Geocoding
-GEO_SERVICES=google-maps
+GEO_SERVICES=google-geocode
 
 # Use only Google Address Validation
 GEO_SERVICES=google-validation
@@ -73,12 +74,12 @@ GEO_SERVICES=geocodio
 GEO_SERVICES=azure
 
 # Use multiple services (recommended for best accuracy)
-GEO_SERVICES=google-maps,google-validation,geocodio,azure
+GEO_SERVICES=google-geocode,google-validation,geocodio,azure
 ```
 
 Each service requires its corresponding API key:
 
-- `GOOGLE_MAPS_API_KEY` - Required when `google-maps` or `google-validation` is enabled
+- `GOOGLE_MAPS_API_KEY` - Required when `google-geocode` or `google-validation` is enabled
 - `GEOCODIO_API_KEY` - Required when `geocodio` is enabled
 - `AZURE_MAPS_API_KEY` - Required when `azure` is enabled
 
@@ -148,7 +149,7 @@ Multiple addresses (services disagree):
       "state": "IL",
       "zip": "62701",
       "coordinates": [39.7817, -89.6501],
-      "service": "google-maps"
+      "service": "google-geocode"
     },
     {
       "street": "Main Ave",

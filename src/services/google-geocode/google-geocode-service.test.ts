@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest'
-import { GoogleMapsService } from './google-maps-service'
+import { GoogleGeocodeService } from './google-geocode-service'
 import {
   mockGoogleGeocodeResponse,
   mockGoogleZeroResultsResponse,
@@ -7,12 +7,12 @@ import {
 } from './fixtures'
 import { mockFetchError, createAbortError } from '@/test'
 
-describe('GoogleMapsService', () => {
-  let service: GoogleMapsService
+describe('GoogleGeocodeService', () => {
+  let service: GoogleGeocodeService
   let mockFetch: Mock
 
   beforeEach(() => {
-    service = new GoogleMapsService({
+    service = new GoogleGeocodeService({
       timeout: 5000,
       apiKey: 'test-api-key',
     })

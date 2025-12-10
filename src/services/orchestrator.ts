@@ -1,6 +1,6 @@
 import type { FastifyBaseLogger } from 'fastify'
 import type { AddressService, ValidationResult } from './base/address-service'
-import { GoogleMapsService } from './google-maps/google-maps-service'
+import { GoogleGeocodeService } from './google-geocode/google-geocode-service'
 import { GoogleValidationService } from './google-validation/google-validation-service'
 import { GeocodioService } from './geocodio/geocodio-service'
 import { AzureMapsService } from './azure/azure-maps-service'
@@ -45,7 +45,7 @@ export class AddressServiceOrchestrator {
     },
     SERVICES: {
       'google-validation': 12, // Google Address Validation API with USPS integration
-      'google-maps': 10, // Google Maps is known for high accuracy
+      'google-geocode': 10, // Google Geocoding API is known for high accuracy
       azure: 7, // Azure Maps with TomTom data, between Google and Geocodio
       geocodio: 5,
     },
@@ -68,11 +68,11 @@ export class AddressServiceOrchestrator {
     const timeout = env.ADDRESS_SERVICE_TIMEOUT
 
     switch (name) {
-      case 'google-maps':
+      case 'google-geocode':
         if (!env.GOOGLE_MAPS_API_KEY) {
-          throw new Error('GOOGLE_MAPS_API_KEY is required for google-maps service')
+          throw new Error('GOOGLE_MAPS_API_KEY is required for google-geocode service')
         }
-        return new GoogleMapsService({
+        return new GoogleGeocodeService({
           timeout,
           apiKey: env.GOOGLE_MAPS_API_KEY,
         })
