@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
 import type { FastifyBaseLogger } from 'fastify'
 import { AddressServiceOrchestrator } from './orchestrator'
-import { mockGoogleGeocodeResponse, mockGooglePartialMatchResponse } from './google/fixtures'
+import { mockGoogleGeocodeResponse, mockGooglePartialMatchResponse } from './google-maps/fixtures'
 import { mockGeocodioResponse } from './geocodio/fixtures'
 import { createMockLogger } from '@/test'
 
@@ -27,7 +27,7 @@ describe('AddressServiceOrchestrator', () => {
   describe('single service', () => {
     it('returns result from single service', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google'],
+        serviceNames: ['google-maps'],
         logger: mockLogger,
       })
 
@@ -48,7 +48,7 @@ describe('AddressServiceOrchestrator', () => {
 
     it('returns unverifiable when service fails', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google'],
+        serviceNames: ['google-maps'],
         logger: mockLogger,
       })
 
@@ -67,7 +67,7 @@ describe('AddressServiceOrchestrator', () => {
   describe('multiple services', () => {
     it('returns best result from multiple services', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google', 'geocodio'],
+        serviceNames: ['google-maps', 'geocodio'],
         logger: mockLogger,
       })
 
@@ -102,7 +102,7 @@ describe('AddressServiceOrchestrator', () => {
 
     it('includes alt when services return different addresses', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google', 'geocodio'],
+        serviceNames: ['google-maps', 'geocodio'],
         logger: mockLogger,
       })
 
@@ -140,7 +140,7 @@ describe('AddressServiceOrchestrator', () => {
 
     it('does not include alt when services return same address', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google', 'geocodio'],
+        serviceNames: ['google-maps', 'geocodio'],
         logger: mockLogger,
       })
 
@@ -159,7 +159,7 @@ describe('AddressServiceOrchestrator', () => {
 
     it('handles service failure gracefully', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google', 'geocodio'],
+        serviceNames: ['google-maps', 'geocodio'],
         logger: mockLogger,
       })
 
@@ -190,7 +190,7 @@ describe('AddressServiceOrchestrator', () => {
   describe('request coalescing', () => {
     it('reuses promise for duplicate concurrent requests', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google'],
+        serviceNames: ['google-maps'],
         logger: mockLogger,
       })
 
@@ -221,7 +221,7 @@ describe('AddressServiceOrchestrator', () => {
   describe('accuracy scoring', () => {
     it('prefers valid over corrected status', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google', 'geocodio'],
+        serviceNames: ['google-maps', 'geocodio'],
         logger: mockLogger,
       })
 
@@ -252,7 +252,7 @@ describe('AddressServiceOrchestrator', () => {
 
     it('prefers complete addresses', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google', 'geocodio'],
+        serviceNames: ['google-maps', 'geocodio'],
         logger: mockLogger,
       })
 
@@ -289,7 +289,7 @@ describe('AddressServiceOrchestrator', () => {
   describe('deduplication', () => {
     it('normalizes addresses for deduplication', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google', 'geocodio'],
+        serviceNames: ['google-maps', 'geocodio'],
         logger: mockLogger,
       })
 
@@ -311,7 +311,7 @@ describe('AddressServiceOrchestrator', () => {
   describe('error handling', () => {
     it('returns unverifiable when all services fail', async () => {
       const orchestrator = new AddressServiceOrchestrator({
-        serviceNames: ['google', 'geocodio'],
+        serviceNames: ['google-maps', 'geocodio'],
         logger: mockLogger,
       })
 

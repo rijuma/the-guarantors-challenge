@@ -60,8 +60,11 @@ The API implements a service orchestration layer that supports multiple geocodin
 Services are configured via the `GEO_SERVICES` environment variable as a comma-separated list:
 
 ```bash
-# Use only Google Maps
-GEO_SERVICES=google
+# Use only Google Maps Geocoding
+GEO_SERVICES=google-maps
+
+# Use only Google Address Validation
+GEO_SERVICES=google-validation
 
 # Use only Geocodio
 GEO_SERVICES=geocodio
@@ -70,12 +73,12 @@ GEO_SERVICES=geocodio
 GEO_SERVICES=azure
 
 # Use multiple services (recommended for best accuracy)
-GEO_SERVICES=google,geocodio,azure
+GEO_SERVICES=google-maps,google-validation,geocodio,azure
 ```
 
 Each service requires its corresponding API key:
 
-- `GOOGLE_MAPS_API_KEY` - Required when `google` is enabled
+- `GOOGLE_MAPS_API_KEY` - Required when `google-maps` or `google-validation` is enabled
 - `GEOCODIO_API_KEY` - Required when `geocodio` is enabled
 - `AZURE_MAPS_API_KEY` - Required when `azure` is enabled
 
@@ -145,7 +148,7 @@ Multiple addresses (services disagree):
       "state": "IL",
       "zip": "62701",
       "coordinates": [39.7817, -89.6501],
-      "service": "google"
+      "service": "google-maps"
     },
     {
       "street": "Main Ave",
